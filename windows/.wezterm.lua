@@ -37,14 +37,19 @@ config.keys = {
 
 -- Seletor estilo Alt+Tab (Ctrl+Alt+T / Ctrl+Alt+Shift+T): prévia ao vivo, confirma ao soltar Ctrl/Alt.
 -- Veja .wezterm_switcher.lua (dados em .wezterm_themes/, gerados por `theme sync`).
+local SW = nil            -- instância do seletor (para aba/relógio acompanharem a prévia)
+local refresh_status      -- definida mais abaixo (só existe no modo com vidro)
 local sw_ok, sw = pcall(dofile, wezterm.home_dir .. '/.wezterm_switcher.lua')
 if sw_ok and type(sw) == 'table' then
-  local setup_ok, err = pcall(sw.setup, config, wezterm, {
+  local setup_ok, err = pcall(function()
+    SW = sw.setup(config, wezterm, {
     dir = wezterm.home_dir .. '/.wezterm_themes',
     current = T.name,
     theme_cmd = { 'wsl.exe', '-e', '/home/luqueta/.local/bin/theme' },
     frame_font = wezterm.font_with_fallback { 'JetBrains Mono', 'Cascadia Code' },
-  })
+    on_preview = function(window) if refresh_status then refresh_status(window) end end,
+    })
+  end)
   if not setup_ok then wezterm.log_error('switcher: ' .. tostring(err)) end
 else
   wezterm.log_error('switcher: módulo indisponível (' .. tostring(sw) .. ')')
@@ -136,11 +141,13 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
   title = wezterm.truncate_right(title, math.max(TAB_MIN, max_width - 10))
   title = wezterm.pad_right(title, TAB_MIN)
   local idx = tab.tab_index + 1
+  local PT = SW and SW.preview_data and SW.preview_data() or nil   -- tema em prévia (seletor), se houver
+  local a1, a2 = (PT and PT.accent1) or T.accent1, (PT and PT.accent2) or T.accent2
   if tab.is_active then
     return {
-      { Foreground = { Color = T.accent1 } },
+      { Foreground = { Color = a1 } },
       { Text = ' ▍' },
-      { Foreground = { Color = T.accent2 } },
+      { Foreground = { Color = a2 } },
       { Attribute = { Intensity = 'Bold' } },
       { Text = icon .. ' ' .. idx .. ' ' .. title .. ' ' },
     }
@@ -162,15 +169,19 @@ config.char_select_fg_color = T.palette_ui.accent2
 config.status_update_interval = 2000
 
 local last_status = {}
-wezterm.on('update-status', function(window, pane)
+-- calcula e aplica o status à direita; usa as cores do tema em prévia (seletor) quando houver
+refresh_status = function(window)
   local id = window:window_id()
-  local a = T.scheme.ansi or {}
+  local PT = SW and SW.preview_data and SW.preview_data() or nil
+  local a = ((PT and PT.scheme) or T.scheme).ansi or {}
+  local a1 = (PT and PT.accent1) or T.accent1
+  local a2 = (PT and PT.accent2) or T.accent2
   local text = wezterm.format {
-    { Foreground = { Color = a[5] or T.accent2 } },
+    { Foreground = { Color = a[5] or a2 } },
     { Text = '󰒋 ' .. window:active_workspace() .. '  ' },
-    { Foreground = { Color = a[2] or T.accent1 } },
+    { Foreground = { Color = a[2] or a1 } },
     { Text = '│ ' },
-    { Foreground = { Color = a[7] or T.accent2 } },
+    { Foreground = { Color = a[7] or a2 } },
     { Attribute = { Intensity = 'Bold' } },
     { Text = '󰥔 ' .. wezterm.strftime('%H:%M') .. '  ' },
   }
@@ -178,6 +189,8 @@ wezterm.on('update-status', function(window, pane)
     last_status[id] = text
     window:set_right_status(text)
   end
-end)
+end
+
+wezterm.on('update-status', function(window, pane) refresh_status(window) end)
 
 return config

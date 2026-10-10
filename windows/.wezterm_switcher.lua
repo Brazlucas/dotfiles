@@ -30,6 +30,7 @@ function M.setup(config, wezterm, opts)
   local current = opts.current            -- nome do tema ativo (nil/classic = fora do carrossel)
   local theme_cmd = opts.theme_cmd        -- {'wsl.exe','-e','/home/.../theme'}
   local frame_font = opts.frame_font
+  local on_preview = opts.on_preview      -- função(window): chamada quando a prévia muda/termina (atualiza aba e relógio)
   local clock = opts.clock or function()
     local t = wezterm.time.now()
     return tonumber(t:format('%s')) + (tonumber(t:format('%.3f')) or 0)
@@ -63,7 +64,7 @@ function M.setup(config, wezterm, opts)
   end
 
   local S = { active = false, gen = 0, idx = 0, base = nil, last_event = 0, last_step = 0, pending = nil, pane = nil,
-              want = nil, sent = nil, preview_t = 0 }
+              want = nil, sent = nil, preview_t = 0, preview_T = nil }
 
   -- roda `theme <args>` no WSL em segundo plano
   local function run_theme(...)
@@ -121,12 +122,17 @@ function M.setup(config, wezterm, opts)
     for k, v in pairs(T.frame or {}) do f[k] = v end
     o.window_frame = f
     o.colors = T.extras
+    -- o tema em prévia precisa estar visível ANTES do override: a barra pode ser redesenhada dentro dessa chamada
+    S.preview_T = T
     window:set_config_overrides(o)
+    if on_preview then pcall(on_preview, window) end
   end
 
   local function clear_overrides(window)
+    S.preview_T = nil
     window:set_config_overrides({})
     window:set_left_status('')
+    if on_preview then pcall(on_preview, window) end
   end
 
   local function pop_table(window)
@@ -254,7 +260,10 @@ function M.setup(config, wezterm, opts)
     end
   end)
 
-  return { state = S, step = step, cancel = cancel, commit = commit }
+  -- dados do tema em prévia (ou nil): aba ativa e relógio usam para acompanhar as cores
+  local function preview_data() return S.preview_T end
+
+  return { state = S, step = step, cancel = cancel, commit = commit, preview_data = preview_data }
 end
 
 return M

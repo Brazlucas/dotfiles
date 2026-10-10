@@ -45,11 +45,12 @@ local function new_env(current, mode)
   local cfg = {}
   local files = { ['/d/index.lua'] = index }
   for _, e in ipairs(index.names) do
-    files['/d/' .. e.name .. '.lua'] = { scheme = { foreground = e.name }, frame = { x = e.name }, extras = { y = e.name }, features = { glass = true } }
+    files['/d/' .. e.name .. '.lua'] = { name = e.name, accent1 = e.accent1, accent2 = e.accent2, scheme = { foreground = e.name }, frame = { x = e.name }, extras = { y = e.name }, features = { glass = true } }
   end
   local eng = M.setup(cfg, wez, {
     dir = '/d', current = current, theme_cmd = { 'theme' }, frame_font = 'F',
     config = { confirm_mode = mode or 'release', debug = false },
+    on_preview = function() env.on_preview_calls = (env.on_preview_calls or 0) + 1 end,
     clock = function() return env.t end,
     schedule = function(sec, fn) env.q[#env.q + 1] = { at = env.t + sec, fn = fn } end,
     load_file = function(p) return files[p] end,
@@ -217,6 +218,21 @@ do
   local e = new_env('a')
   e.step(1); e.window.mods = 'NONE'; e.advance(0.5)
   check('toque rápido: termina em set b', e.cmds[#e.cmds] == 'theme set b', e.cmds[#e.cmds])
+end
+
+-- 17) aba ativa e relógio acompanham a prévia (preview_data + on_preview)
+do
+  local e = new_env('a')
+  check('sem prévia: preview_data nil', e.eng.preview_data() == nil)
+  e.step(1)
+  local pd = e.eng.preview_data()
+  check('prévia: preview_data traz o tema b', pd and pd.name == 'b' and pd.accent1 == '#b1' and pd.accent2 == '#b2', pd and pd.name)
+  check('prévia: on_preview chamado', (e.on_preview_calls or 0) >= 1, e.on_preview_calls)
+  e.advance(0.3); e.step(1)
+  check('prévia: segue o passo seguinte (c)', e.eng.preview_data().name == 'c', e.eng.preview_data().name)
+  e.eng.cancel(e.proxy)
+  check('cancelar: preview_data volta a nil', e.eng.preview_data() == nil)
+  check('cancelar: on_preview avisou o fim', (e.on_preview_calls or 0) >= 3, e.on_preview_calls)
 end
 
 print(string.format('%d/%d verificações OK', total - fails, total))
