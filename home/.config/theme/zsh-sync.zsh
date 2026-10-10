@@ -43,14 +43,25 @@ _theme_apply_prompt() {
   source $f
 }
 
-_theme_precmd() {
-  local now; now=$(<$_THEME_ACTIVE_FILE) 2>/dev/null || return
-  [[ $now == $_THEME_APPLIED ]] && return
+# retorna 0 se o tema mudou (e foi reaplicado), 1 se nada mudou
+_theme_check() {
+  local now; now=$(<$_THEME_ACTIVE_FILE) 2>/dev/null || return 1
+  [[ $now == $_THEME_APPLIED ]] && return 1
   local first=0; [[ -z $_THEME_APPLIED ]] && first=1
   _THEME_APPLIED=$now
   _theme_apply_env
   # no início o oh-my-zsh já carregou o prompt do tema certo (ZSH_THEME); depois só se mudou
   (( first )) || _theme_apply_prompt
+  return 0
+}
+
+# a cada prompt novo
+_theme_precmd() { _theme_check }
+
+# com o shell parado no prompt: confere a cada 1s e redesenha na hora se o tema mudou
+TMOUT=1
+TRAPALRM() {
+  _theme_check && [[ -o zle ]] && zle && zle reset-prompt
 }
 
 autoload -Uz add-zsh-hook
