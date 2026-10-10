@@ -5,6 +5,9 @@ local M = {}
 local state_file = "/mnt/c/Users/blubs/.theme_state"
 local legacy_file = "/mnt/c/Users/blubs/.cyber_state"
 local palette_file = vim.fn.expand("~/.config/theme/build/current/nvim.lua")
+-- marcador do tema ativo (nome + hora): muda em `theme set` E em `theme preview` (prévia do seletor Ctrl+Alt+T)
+local active_dir = vim.fn.expand("~/.config/theme/build")
+local active_file = active_dir .. "/.active"
 
 local function read(path)
   local f = io.open(path, "r")
@@ -25,17 +28,19 @@ function M.is_on()
   return M.current() ~= "classic"
 end
 
-local applied
+local applied -- marcador aplicado por último
+
 -- aplica o colorscheme do tema: "generated" usa colors/theme.lua; senão um colorscheme nativo
 function M.apply()
-  local name = M.current()
+  local mk = read(active_file)
+  if mk == nil or mk == "" then return end  -- arquivo sendo regravado: o próximo evento reaplica
   local ok, P = pcall(dofile, palette_file)
   local scheme = (ok and P.colorscheme) or "generated"
   local want = (scheme == "generated") and "theme" or scheme
-  -- paleta gerada pode ter mudado mesmo com o mesmo nome do tema: reaplica sempre que o nome mudar
-  if applied ~= name or vim.g.colors_name ~= want then
+  -- o marcador muda a cada troca (inclusive prévias); a paleta é relida a cada `colorscheme theme`
+  if applied ~= mk or vim.g.colors_name ~= want then
     pcall(vim.cmd.colorscheme, want)
-    applied = name
+    applied = mk
   end
 end
 
@@ -47,14 +52,23 @@ function M.toggle()
   end))
 end
 
--- observa o estado a cada 1s
-local timer
+-- acompanha o tema: observador de arquivo (reação imediata, inclusive na prévia) + relógio de 1s de reserva
+local timer, fs_event
+local function sync()
+  local mk = read(active_file)
+  if mk and mk ~= "" and mk ~= applied then M.apply() end
+end
+
 function M.watch()
   if timer then return end
   timer = vim.uv.new_timer()
-  timer:start(1000, 1000, vim.schedule_wrap(function()
-    if applied ~= M.current() then M.apply() end
-  end))
+  timer:start(1000, 1000, vim.schedule_wrap(sync))
+  fs_event = vim.uv.new_fs_event()
+  if fs_event then
+    fs_event:start(active_dir, {}, vim.schedule_wrap(function(err, fname)
+      if not err and fname == ".active" then sync() end
+    end))
+  end
 end
 
 return M
