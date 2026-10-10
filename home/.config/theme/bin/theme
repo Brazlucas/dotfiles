@@ -9,6 +9,7 @@ Uso:
   theme next | prev       cicla entre os temas (sem o clássico)
   theme build [nome]      só gera os arquivos (não muda o estado)
   theme preview <nome>    prévia leve (tmux + shells) sem mudar o estado; usada pelo seletor
+  theme repair            limpa estado acumulado do tmux e redesenha (se algo ficar estranho)
   theme sync              exporta os temas para o seletor do WezTerm (Ctrl+Alt+T)
   theme export nvim [n]   exporta o colorscheme do nvim como pacote independente
 
@@ -354,7 +355,9 @@ def reload_live():
     tm = ["tmux"] + (["-L", os.environ["THEME_TMUX_SOCKET"]] if os.environ.get("THEME_TMUX_SOCKET") else [])
     try:
         if subprocess.run(tm + ["has-session"], env=env, capture_output=True).returncode == 0:
-            subprocess.run(tm + ["source-file", str(TMUX_CONF)], env=env, capture_output=True)
+            # só o arquivo de tema gerado (opções de cor, idempotente): NÃO re-lê o tmux.conf inteiro,
+            # que re-executaria tpm/plugins, binds e opções cumulativas a cada troca/prévia
+            subprocess.run(tm + ["source-file", str(BUILD / "current" / "tmux.conf")], env=env, capture_output=True)
             subprocess.run(tm + ["refresh-client", "-S"], env=env, capture_output=True)
     except FileNotFoundError:
         pass
@@ -429,6 +432,21 @@ def _atomic_write_new(path, text):
     os.replace(tmp, path)
 
 
+def repair():
+    """Limpa estado acumulado no tmux e força um redesenho completo dos clientes."""
+    env = {k: v for k, v in os.environ.items() if k != "TMUX"}
+    tm = ["tmux"] + (["-L", os.environ["THEME_TMUX_SOCKET"]] if os.environ.get("THEME_TMUX_SOCKET") else [])
+    if subprocess.run(tm + ["has-session"], env=env, capture_output=True).returncode != 0:
+        print("tmux não está rodando; nada a reparar")
+        return
+    out = subprocess.run(tm + ["show", "-g", "terminal-overrides"], env=env, capture_output=True, text=True).stdout
+    before = len([l for l in out.splitlines() if l.strip()])
+    subprocess.run(tm + ["set", "-g", "terminal-overrides", "linux*:AX@,*:Tc"], env=env, capture_output=True)
+    subprocess.run(tm + ["source-file", str(BUILD / "current" / "tmux.conf")], env=env, capture_output=True)
+    subprocess.run(tm + ["refresh-client"], env=env, capture_output=True)  # redesenho completo
+    print(f"tmux: terminal-overrides {before} -> 2 entradas; tema recarregado; clientes redesenhados")
+
+
 def last_theme():
     if LAST.exists() and LAST.read_text().strip() in palettes():
         return LAST.read_text().strip()
@@ -480,6 +498,8 @@ def main(argv):
         else:
             i = names.index(current())
             activate(names[(i + (1 if cmd == "next" else -1)) % len(names)])
+    elif cmd == "repair":
+        repair()
     elif cmd == "_claude":  # interno: aplicado em segundo plano por install_extras
         apply_claude(argv[2], float(argv[3]) if len(argv) > 3 else 0.0)
     elif cmd == "sync":

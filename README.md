@@ -27,6 +27,7 @@ theme set tokyo-night   # troca tudo; WezTerm, tmux, nvim e os shells abertos (z
 theme toggle            # ativa/desativa (último tema <-> classic)
 theme next | prev       # cicla
 theme export nvim <t>   # colorscheme do nvim autocontido (pasta themes/<t>.nvim)
+theme repair            # limpa estado acumulado do tmux e redesenha os clientes (se algo ficar estranho)
 ```
 **Atalhos:** WezTerm `Ctrl+Alt+G` (liga/desliga) · tmux `prefixo + T` · nvim `<leader>uz`.
 
