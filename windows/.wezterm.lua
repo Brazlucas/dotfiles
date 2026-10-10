@@ -7,30 +7,30 @@ config.default_prog = { 'wsl.exe', '--cd', '~' }
 -- Tema Darcula (JetBrains)
 config.color_schemes = {
   ['Cyberpunk'] = {
-    foreground = '#d7e0ff',
-    background = '#0a0817',
+    foreground = '#d3dcea',
+    background = '#080b10',
     cursor_bg = '#ff2a6d',
-    cursor_fg = '#0a0817',
+    cursor_fg = '#080b10',
     cursor_border = '#ff2a6d',
     selection_fg = '#ffffff',
-    selection_bg = '#4a1d7a',
-    scrollbar_thumb = '#2b1f55',
+    selection_bg = '#12404a',
+    scrollbar_thumb = '#1f2a37',
     split = '#ff2a6d',
     ansi = {
-      '#120f26', '#ff2a6d', '#00ffa3', '#fcee0a',
-      '#3d8bff', '#c04dff', '#05f2ff', '#d7e0ff',
+      '#0d1117', '#ff2a6d', '#00ffa3', '#fcee0a',
+      '#3d8bff', '#b45cff', '#05f2ff', '#d3dcea',
     },
     brights = {
-      '#4a4580', '#ff5c93', '#5dffc3', '#fff75e',
+      '#44505f', '#ff5c93', '#5dffc3', '#fff75e',
       '#74adff', '#dc82ff', '#6ffaff', '#ffffff',
     },
     tab_bar = {
-      background = '#06040f',
-      active_tab = { bg_color = '#0a0817', fg_color = '#05f2ff', intensity = 'Bold' },
-      inactive_tab = { bg_color = '#06040f', fg_color = '#6b5fa8' },
-      inactive_tab_hover = { bg_color = '#150f2e', fg_color = '#ff2a6d' },
-      new_tab = { bg_color = '#06040f', fg_color = '#6b5fa8' },
-      new_tab_hover = { bg_color = '#150f2e', fg_color = '#ff2a6d' },
+      background = '#06080c',
+      active_tab = { bg_color = '#080b10', fg_color = '#05f2ff', intensity = 'Bold' },
+      inactive_tab = { bg_color = '#06080c', fg_color = '#5c6b80' },
+      inactive_tab_hover = { bg_color = '#0d1117', fg_color = '#ff2a6d' },
+      new_tab = { bg_color = '#06080c', fg_color = '#5c6b80' },
+      new_tab_hover = { bg_color = '#0d1117', fg_color = '#ff2a6d' },
     },
   },
   ['Darcula'] = {
@@ -138,7 +138,7 @@ local function frame_for(name)
     frame.border_top_height = '1px'
     frame.border_left_color = '#ff2a6d'
     frame.border_right_color = '#05f2ff'
-    frame.border_bottom_color = '#c04dff'
+    frame.border_bottom_color = '#ff2a6d'
     frame.border_top_color = '#05f2ff'
   end
   return frame
@@ -149,7 +149,7 @@ local scan_png = wezterm.home_dir .. '/.wezterm_assets/scanlines.png'
 
 local function background_for(name)
   local sc = scheme_def(name) or {}
-  local bg = wezterm.color.parse(sc.background or '#0a0817')
+  local bg = wezterm.color.parse(sc.background or '#080b10')
   local tint = (name == 'Cyberpunk') and '#1c0a38' or tostring(bg:lighten(0.07))
   return {
     { -- corpo do vidro (tingido, deixa o Acrylic aparecer por baixo)
@@ -190,7 +190,6 @@ local valid = false
 for _, n in ipairs(themes) do if n == saved_theme then valid = true end end
 config.color_scheme = valid and saved_theme or 'Cyberpunk'
 config.window_frame = frame_for(config.color_scheme)
-config.background = background_for(config.color_scheme)
 
 local function cycle_theme(step)
   return wezterm.action_callback(function(window)
@@ -203,7 +202,6 @@ local function cycle_theme(step)
     idx = (idx - 1 + step) % #themes + 1
     overrides.color_scheme = themes[idx]
     overrides.window_frame = frame_for(themes[idx])
-    overrides.background = background_for(themes[idx])
     window:set_config_overrides(overrides)
     save_theme(themes[idx])
     window:toast_notification('WezTerm', 'Tema: ' .. themes[idx], nil, 1500)
@@ -233,8 +231,8 @@ config.window_padding = { left = 14, right = 14, top = 10, bottom = 8 }
 -- Efeito de vidro (Windows 11): Acrylic = transparência com blur
 -- Para só transparência sem blur use 'Disable'; 'Mica'/'Tabbed' são outras opções
 config.win32_system_backdrop = 'Acrylic'
-config.window_background_opacity = 0.78
-config.text_background_opacity = 0.92
+config.window_background_opacity = 0.62
+config.text_background_opacity = 1.0
 
 -- Painéis inativos levemente escurecidos
 config.inactive_pane_hsb = { saturation = 0.9, brightness = 0.65 }
@@ -315,18 +313,18 @@ config.colors = {
   visual_bell = '#ff2a6d',
   compose_cursor = '#fcee0a',
   copy_mode_active_highlight_bg = { Color = '#ff2a6d' },
-  copy_mode_active_highlight_fg = { Color = '#0a0817' },
-  copy_mode_inactive_highlight_bg = { Color = '#4a1d7a' },
+  copy_mode_active_highlight_fg = { Color = '#080b10' },
+  copy_mode_inactive_highlight_bg = { Color = '#12404a' },
   copy_mode_inactive_highlight_fg = { Color = '#ffffff' },
   quick_select_label_bg = { Color = '#ff2a6d' },
-  quick_select_label_fg = { Color = '#0a0817' },
+  quick_select_label_fg = { Color = '#080b10' },
   quick_select_match_bg = { Color = '#05f2ff' },
-  quick_select_match_fg = { Color = '#0a0817' },
+  quick_select_match_fg = { Color = '#080b10' },
 }
-config.command_palette_bg_color = '#120f26'
+config.command_palette_bg_color = '#0d1117'
 config.command_palette_fg_color = '#05f2ff'
 config.command_palette_rows = 12
-config.char_select_bg_color = '#120f26'
+config.char_select_bg_color = '#0d1117'
 config.char_select_fg_color = '#05f2ff'
 
 config.scrollback_lines = 10000
