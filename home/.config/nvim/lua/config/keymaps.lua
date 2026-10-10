@@ -36,5 +36,5 @@ end
 vim.keymap.set("n", "<leader>uj", function() cycle_colorscheme(1) end, { desc = "Próximo colorscheme" })
 vim.keymap.set("n", "<leader>uk", function() cycle_colorscheme(-1) end, { desc = "Colorscheme anterior" })
 
--- Liga/desliga o tema cyberpunk (também sincroniza WezTerm e tmux)
-vim.keymap.set("n", "<leader>uz", function() require("config.cyber").toggle() end, { desc = "Tema cyberpunk (liga/desliga)" })
+-- Liga/desliga o tema global (também sincroniza WezTerm, tmux e zsh)
+vim.keymap.set("n", "<leader>uz", function() require("config.theme").toggle() end, { desc = "Tema global (liga/desliga)" })

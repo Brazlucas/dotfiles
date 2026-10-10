@@ -1,0 +1,368 @@
+#!/usr/bin/env python3
+"""theme — sistema de temas único para WezTerm, tmux, nvim, zsh e demais ferramentas.
+
+Uso:
+  theme list              lista as paletas
+  theme current           mostra o tema ativo
+  theme set <nome>        ativa um tema (gera tudo e recarrega o que der)
+  theme toggle            alterna entre o último tema e o clássico (visual original)
+  theme next | prev       cicla entre os temas
+  theme build [nome]      só gera os arquivos (não muda o estado)
+  theme export nvim [n]   exporta o colorscheme do nvim como pacote independente
+
+Um tema é um arquivo em palettes/<nome>.toml. Para criar outro: copie um existente e edite.
+Estado em <home do Windows>/.theme_state. Só usa a biblioteca padrão do Python.
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+import tomllib
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+HOME = Path.home()
+WINHOME = Path(os.environ.get("WINHOME", "/mnt/c/Users/blubs"))
+STATE = WINHOME / ".theme_state"
+BUILD = ROOT / "build"
+LAST = BUILD / ".last_theme"
+OUT = BUILD  # diretório de saída do build em curso (build/<tema>/)
+LEGACY_STATE = WINHOME / ".cyber_state"
+DEFAULT = "cyberpunk"
+CLASSIC = "classic"
+TMUX_CONF = HOME / ".config" / "tmux" / "tmux.conf"
+WEZ_THEME = WINHOME / ".wezterm_theme.lua"
+
+
+# ───────────────────────── paletas ─────────────────────────
+def palettes():
+    return sorted(p.stem for p in (ROOT / "palettes").glob("*.toml"))
+
+
+def load(name):
+    path = ROOT / "palettes" / f"{name}.toml"
+    if not path.exists():
+        sys.exit(f"theme: paleta '{name}' não existe. Disponíveis: {', '.join(palettes())}")
+    with open(path, "rb") as f:
+        return tomllib.load(f)
+
+
+def hex_rgb(h):
+    h = h.lstrip("#")
+    return ";".join(str(int(h[i:i + 2], 16)) for i in (0, 2, 4))
+
+
+def variables(p):
+    """Achata a paleta em variáveis de template."""
+    v = {"name": p["name"], "label": p.get("label", p["name"]), "kind": p.get("kind", "dark")}
+    v.update(p["colors"])
+    for i, c in enumerate(p["colors"]["ansi"]):
+        v[f"ansi{i}"] = c
+    for i, c in enumerate(p["colors"]["brights"]):
+        v[f"bright{i}"] = c
+    for k, c in p.get("diff", {}).items():
+        v[f"diff_{k}"] = c
+    for k, c in p.get("tabbar", {}).items():
+        v[f"tab_{k}"] = c
+    for k, c in p.get("mascot", {}).items():
+        v[f"mascot_{k}"] = c
+    for k, c in p.get("features", {}).items():
+        v[k] = c
+    return v
+
+
+# ───────────────────────── templates ─────────────────────────
+# bloco if/else sem outro "{{#if" dentro (resolvido de dentro para fora → suporta aninhamento)
+_BODY = r"((?:(?!\{\{#if|\{\{/if\}\}|\{\{#else\}\}).)*)"
+_IF = re.compile(r"\{\{#if ([^}]+)\}\}\n?" + _BODY + r"(?:\{\{#else\}\}\n?" + _BODY + r")?\{\{/if\}\}\n?", re.S)
+_VAR = re.compile(r"\{\{\s*([A-Za-z0-9_]+)(?:\|(\w+))?\s*\}\}")
+
+
+def render(text, v):
+    def cond(m):
+        expr, yes, no = m.group(1).strip(), m.group(2), m.group(3) or ""
+        if "=" in expr:
+            k, want = (s.strip() for s in expr.split("=", 1))
+            ok = str(v.get(k)) == want
+        else:
+            ok = bool(v.get(expr))
+        return yes if ok else no
+
+    prev = None
+    while prev != text:
+        prev, text = text, _IF.sub(cond, text)
+
+    def var(m):
+        key, flt = m.group(1), m.group(2)
+        if key not in v:
+            sys.exit(f"theme: variável '{key}' não existe na paleta")
+        val = v[key]
+        return hex_rgb(val) if flt == "rgb" else str(val)
+
+    return _VAR.sub(var, text)
+
+
+def write(path, text):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+
+
+def lua(value, indent=0):
+    pad = "  " * indent
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float)):
+        return repr(value)
+    if isinstance(value, str):
+        return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'"
+    if isinstance(value, list):
+        return "{ " + ", ".join(lua(x, indent) for x in value) + " }"
+    if isinstance(value, dict):
+        inner = "".join(f"{pad}  {k} = {lua(x, indent + 1)},\n" for k, x in value.items())
+        return "{\n" + inner + pad + "}"
+    raise TypeError(value)
+
+
+# ───────────────────────── geradores ─────────────────────────
+def gen_tmux(p, v):
+    text = render((ROOT / "templates" / "tmux.conf.tmpl").read_text(encoding="utf-8"), v)
+    write(OUT / "tmux.conf", text)
+
+
+def gen_wezterm(p, v):
+    c, tb, f = p["colors"], p.get("tabbar", {}), p["features"]
+    scheme = {
+        "foreground": c["fg"], "background": c["bg"],
+        "cursor_bg": c["accent1"], "cursor_fg": c["bg"], "cursor_border": c["accent1"],
+        "selection_fg": c["sel_fg"], "selection_bg": c["sel"],
+        "scrollbar_thumb": c["line"], "split": c["accent1"] if f.get("glass") else c["line"],
+        "ansi": c["ansi"], "brights": c["brights"],
+        "tab_bar": {
+            "background": tb["bg"],
+            "active_tab": {"bg_color": tb["active_bg"], "fg_color": tb["active_fg"]},
+            "inactive_tab": {"bg_color": tb["inactive_bg"], "fg_color": tb["inactive_fg"]},
+            "inactive_tab_hover": {"bg_color": tb["hover_bg"], "fg_color": tb["hover_fg"]},
+            "new_tab": {"bg_color": tb["inactive_bg"], "fg_color": tb["inactive_fg"]},
+            "new_tab_hover": {"bg_color": tb["hover_bg"], "fg_color": tb["hover_fg"]},
+        },
+    }
+    if f.get("glass"):
+        scheme["tab_bar"]["active_tab"]["intensity"] = "Bold"
+    bar, fg = tb["bg"], tb["inactive_fg"]
+    frame = {
+        "active_titlebar_bg": bar, "inactive_titlebar_bg": bar,
+        "active_titlebar_fg": fg, "inactive_titlebar_fg": fg,
+        "inactive_titlebar_border_bottom": bar, "active_titlebar_border_bottom": bar,
+        "button_fg": fg, "button_bg": bar,
+        "button_hover_fg": c["ansi"][6], "button_hover_bg": c["bg"],
+    }
+    if "frame" in f:
+        fr = f["frame"]
+        frame.update({
+            "border_left_width": "1px", "border_right_width": "1px",
+            "border_bottom_height": "1px", "border_top_height": "1px",
+            "border_left_color": fr["left"], "border_right_color": fr["right"],
+            "border_bottom_color": fr["bottom"], "border_top_color": fr["top"],
+        })
+    extras = {
+        "visual_bell": c["accent1"], "compose_cursor": c["yellow"],
+        "copy_mode_active_highlight_bg": {"Color": c["accent1"]},
+        "copy_mode_active_highlight_fg": {"Color": c["bg"]},
+        "copy_mode_inactive_highlight_bg": {"Color": c["sel"]},
+        "copy_mode_inactive_highlight_fg": {"Color": c["sel_fg"]},
+        "quick_select_label_bg": {"Color": c["accent1"]},
+        "quick_select_label_fg": {"Color": c["bg"]},
+        "quick_select_match_bg": {"Color": c["accent2"]},
+        "quick_select_match_fg": {"Color": c["bg"]},
+    }
+    data = {
+        "name": p["name"], "label": v["label"],
+        "scheme": scheme, "frame": frame, "extras": extras,
+        "features": {k: x for k, x in f.items() if k in (
+            "glass", "opacity", "fancy_tabs", "padding", "font_size", "line_height", "cursor")},
+        "accent1": c["accent1"], "accent2": c["accent2"],
+        "palette_ui": {"bg_alt": c["bg_alt"], "accent2": c["accent2"]},
+    }
+    text = "-- gerado por `theme` — não edite à mão (palettes/%s.toml)\nreturn %s\n" % (p["name"], lua(data))
+    write(OUT / "wezterm.lua", text)
+
+
+def gen_nvim(p, v):
+    c = p["colors"]
+    data = {
+        "name": p["name"], "colorscheme": p["features"].get("nvim", "generated"),
+        "colors": {k: x for k, x in c.items() if isinstance(x, str)},
+        "diff": p.get("diff", {}),
+    }
+    write(OUT / "nvim.lua", "-- gerado por `theme`\nreturn %s\n" % lua(data))
+
+
+def gen_zsh(p, v):
+    tmpl = ROOT / "templates" / "zsh-theme.tmpl"
+    write(OUT / "theme-active.zsh-theme", render(tmpl.read_text(encoding="utf-8"), v))
+    write(OUT / "zsh_theme", p["features"].get("zsh_theme", "theme-active"))
+
+
+def gen_neko(p, v):
+    f = p["features"]
+    m = p.get("mascot", {})
+    body = hex_rgb(m.get("body", "#ff6ec7"))
+    text = (
+        "# gerado por `theme`\n"
+        f"NEKO_ENABLED={1 if f.get('neko') else 0}\n"
+        f"NEKO_BODY='{body}'\n"
+        f"NEKO_CAPTION='{hex_rgb(m.get('caption', '#05f2ff'))}'\n"
+        f"NEKO_DIM='{hex_rgb(m.get('caption_dim', '#6b5fa8'))}'\n"
+        f"NEKO_BG='{hex_rgb(p['colors']['bg'])}'\n"
+        f"NEKO_BG_HEX='{p['colors']['bg']}'\n"
+        f"NEKO_BORDER_HEX='{p['colors']['accent1']}'\n"
+    )
+    write(OUT / "neko.zsh", text)
+
+
+GENERATORS = [gen_tmux, gen_wezterm, gen_nvim, gen_zsh, gen_neko]
+
+
+def extra_generators():
+    """Geradores adicionais (colorir tudo) vivem em gen_extra.py, se existir."""
+    path = ROOT / "bin" / "gen_extra.py"
+    if not path.exists():
+        return []
+    ns = {"__file__": str(path)}
+    exec(compile(path.read_text(encoding="utf-8"), str(path), "exec"), ns)
+    return ns["register"](sys.modules[__name__])
+
+
+def build(name):
+    global OUT
+    p = load(name)
+    v = variables(p)
+    OUT = BUILD / name
+    OUT.mkdir(parents=True, exist_ok=True)
+    for gen in GENERATORS + extra_generators():
+        gen(p, v)
+    return p
+
+
+def install(name):
+    """Torna o tema ativo: build/current -> build/<nome> e instala os arquivos que vivem fora."""
+    cur = BUILD / "current"
+    if cur.is_symlink() or cur.exists():
+        cur.unlink()
+    cur.symlink_to(name)
+    src = BUILD / name
+    write(HOME / ".oh-my-zsh" / "custom" / "themes" / "theme-active.zsh-theme",
+          (src / "theme-active.zsh-theme").read_text(encoding="utf-8"))
+    if WINHOME.exists():
+        write(WEZ_THEME, (src / "wezterm.lua").read_text(encoding="utf-8"))
+    inst = ROOT / "bin" / "install_extra.py"
+    if inst.exists():
+        ns = {"__file__": str(inst)}
+        exec(compile(inst.read_text(encoding="utf-8"), str(inst), "exec"), ns)
+        ns["install"](sys.modules[__name__], name, src)
+
+
+# ───────────────────────── estado e recarga ─────────────────────────
+def current():
+    if STATE.exists():
+        n = STATE.read_text().strip()
+        if n in palettes():
+            return n
+    if LEGACY_STATE.exists():
+        return CLASSIC if LEGACY_STATE.read_text().strip() == "off" else DEFAULT
+    return DEFAULT
+
+
+def set_state(name):
+    WINHOME.mkdir(parents=True, exist_ok=True)
+    STATE.write_text(name)
+    # compatibilidade com leitores antigos do on/off
+    LEGACY_STATE.write_text("off" if name == CLASSIC else "on")
+
+
+def reload_live():
+    """Recarrega o que está em execução: tmux (servidor padrão). WezTerm e nvim observam arquivos."""
+    if os.environ.get("THEME_NO_RELOAD"):
+        return
+    env = {k: v for k, v in os.environ.items() if k != "TMUX"}
+    try:
+        if subprocess.run(["tmux", "has-session"], env=env, capture_output=True).returncode == 0:
+            subprocess.run(["tmux", "source-file", str(TMUX_CONF)], env=env, capture_output=True)
+            subprocess.run(["tmux", "refresh-client", "-S"], env=env, capture_output=True)
+    except FileNotFoundError:
+        pass
+
+
+def activate(name):
+    p = build(name)
+    install(name)
+    set_state(name)
+    if name != CLASSIC:
+        LAST.parent.mkdir(parents=True, exist_ok=True)
+        LAST.write_text(name)
+    reload_live()
+    print(f"{name}: {p.get('label', name)}")
+
+
+def last_theme():
+    if LAST.exists() and LAST.read_text().strip() in palettes():
+        return LAST.read_text().strip()
+    return DEFAULT
+
+
+def export_nvim(name, outdir):
+    """Colorscheme do nvim autocontido (sem depender do sistema de temas): <pasta>/colors/<nome>.lua."""
+    build(name)
+    palette = (BUILD / name / "nvim.lua").read_text(encoding="utf-8")
+    palette = palette.replace("-- gerado por `theme`\n", "").strip()
+    src = (Path.home() / ".config" / "nvim" / "colors" / "theme.lua").read_text(encoding="utf-8")
+    inline = "local P = (function()\n" + palette + "\nend)()"
+    out = re.sub(r'local P = dofile\([^\n]*\)', lambda _m: inline, src, count=1)
+    out = out.replace('vim.g.colors_name = "theme"', f'vim.g.colors_name = "{name}"')
+    out = re.sub(r"^-- Colorscheme genérico.*?\n(?=vim\.cmd)",
+                 f"-- {name}: colorscheme exportado do sistema `theme` (autocontido). Base wildcharm + fundo transparente.\n",
+                 out, count=1, flags=re.S)
+    write(outdir / "colors" / f"{name}.lua", out)
+    print(f"exportado: {outdir}/colors/{name}.lua")
+
+
+def main(argv):
+    cmd = argv[1] if len(argv) > 1 else "current"
+    if cmd in ("-h", "--help", "help"):
+        print(__doc__)
+    elif cmd == "list":
+        cur = current()
+        for n in palettes():
+            print(("* " if n == cur else "  ") + n + "  — " + load(n).get("label", n))
+    elif cmd == "current":
+        print(current())
+    elif cmd == "set":
+        if len(argv) < 3:
+            sys.exit("uso: theme set <nome>")
+        activate(argv[2])
+    elif cmd == "toggle":
+        cur = current()
+        activate(last_theme() if cur == CLASSIC else CLASSIC)
+    elif cmd in ("next", "prev"):
+        names = [n for n in palettes() if n != CLASSIC] + [CLASSIC]
+        i = names.index(current()) if current() in names else 0
+        activate(names[(i + (1 if cmd == "next" else -1)) % len(names)])
+    elif cmd == "build":
+        for n in (argv[2:] or [current()]):
+            build(n)
+            print("gerado:", n)
+    elif cmd == "export":
+        what = argv[2] if len(argv) > 2 else "nvim"
+        if what != "nvim":
+            sys.exit(f"theme: export '{what}' não suportado (use: theme export nvim [tema] [pasta])")
+        name = argv[3] if len(argv) > 3 else current()
+        outdir = Path(argv[4]) if len(argv) > 4 else ROOT / "exports" / f"{name}.nvim"
+        export_nvim(name, outdir)
+    else:
+        sys.exit(f"theme: comando desconhecido '{cmd}'. Veja `theme help`.")
+
+
+if __name__ == "__main__":
+    main(sys.argv)

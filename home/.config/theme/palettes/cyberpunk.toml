@@ -1,0 +1,64 @@
+# Cyberpunk — rosa/ciano neon sobre grafite azulado
+name  = "cyberpunk"
+label = "Cyberpunk"
+kind  = "dark"
+
+[colors]
+bg      = "#080b10"   # fundo
+bg_alt  = "#0d1117"   # painéis, menus
+bg_deep = "#06080c"   # barras (status, abas)
+fg      = "#d3dcea"
+dim     = "#5c6b80"   # comentários, inativos
+subtle  = "#6f819a"   # diretórios, caminhos
+delim   = "#8a9bb3"   # delimitadores
+line    = "#1f2a37"   # separadores, guias
+sel     = "#12404a"   # seleção
+sel_fg  = "#ffffff"
+accent1 = "#ff2a6d"   # rosa
+accent2 = "#05f2ff"   # ciano
+red     = "#ff2a6d"
+green   = "#00ffa3"
+yellow  = "#fcee0a"
+blue    = "#3d8bff"
+magenta = "#b45cff"
+cyan    = "#05f2ff"
+white   = "#ffffff"
+ansi    = ["#0d1117", "#ff2a6d", "#00ffa3", "#fcee0a", "#3d8bff", "#b45cff", "#05f2ff", "#d3dcea"]
+brights = ["#44505f", "#ff5c93", "#5dffc3", "#fff75e", "#74adff", "#dc82ff", "#6ffaff", "#ffffff"]
+
+[diff]
+add    = "#06301f"
+change = "#0c2440"
+delete = "#3a0f1f"
+text   = "#12404a"
+
+[tabbar]            # barra de abas do WezTerm
+bg          = "#06080c"
+active_bg   = "#080b10"
+active_fg   = "#05f2ff"
+inactive_bg = "#06080c"
+inactive_fg = "#5c6b80"
+hover_bg    = "#0d1117"
+hover_fg    = "#ff2a6d"
+
+[mascot]            # gato ASCII (popup do tmux)
+body        = "#ff6ec7"
+caption     = "#05f2ff"
+caption_dim = "#6b5fa8"
+
+[features]
+glass       = true            # Acrylic + abas integradas + padding 0 (WezTerm)
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#05f2ff", right = "#05f2ff", bottom = "#ff2a6d", left = "#ff2a6d" }
+tmux        = "neon"          # neon | classic
+neko        = true
+zsh_theme   = "theme-active"  # gerado a partir da paleta; "suvash" = original
+nvim        = "generated"     # generated | <nome de colorscheme nativo>
+claude      = "custom"        # custom (gera ~/.claude/themes/<nome>.json) | dark-ansi (herda o terminal)
+colorize    = true          # LS_COLORS/eza, fzf, bat, delta, lazygit, btop, ripgrep, zsh plugins
+pgcli_style = "monokai"

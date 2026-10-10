@@ -3,3 +3,5 @@
 [user]
 	email = lukkascomics@gmail.com
 	name = Brazlucas
+[include]
+	path = ~/.config/theme/build/current/delta.gitconfig

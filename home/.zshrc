@@ -20,14 +20,13 @@ plugins=(
 export GOPATH=$HOME/go
 export DISABLE_AUTO_TITLE='true'
 
-# Tema do prompt segue o toggle cyberpunk (~/.cyber_state do Windows): on = cyberpunk, off = suvash
-if [[ "$(cat /mnt/c/Users/blubs/.cyber_state 2>/dev/null)" == off ]]; then
-  ZSH_THEME="suvash"
-else
-  ZSH_THEME="cyberpunk"
-fi
+# Tema do prompt vem do sistema de temas (`theme`): paleta gerada, ou suvash no clássico
+ZSH_THEME="$(cat ~/.config/theme/build/current/zsh_theme 2>/dev/null || echo suvash)"
 
 source $ZSH/oh-my-zsh.sh
+
+# Cores do tema ativo para ls/eza, fzf, bat, lazygit, ripgrep e plugins do zsh (gerado por `theme`)
+[[ -r ~/.config/theme/build/current/env.zsh ]] && source ~/.config/theme/build/current/env.zsh
  
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,

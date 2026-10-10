@@ -36,6 +36,13 @@ clone https://github.com/marlonrichert/zsh-autocomplete zsh-autocomplete
 [ -d "$HOME/.tmux/plugins/tpm" ] || git clone --depth 1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 [ -d "$HOME/.tmux/plugins/tmux-resurrect" ] || git clone --depth 1 https://github.com/tmux-plugins/tmux-resurrect "$HOME/.tmux/plugins/tmux-resurrect"
 
+# sistema de temas: link do CLI + gera/instala o tema ativo (depois do oh-my-zsh, que cria a pasta de temas)
+mkdir -p "$HOME/.local/bin"
+chmod +x "$HOME/.config/theme/bin/theme"
+ln -sf "$HOME/.config/theme/bin/theme" "$HOME/.local/bin/theme"
+"$HOME/.local/bin/theme" set "$(cat "${WINHOME:-/mnt/c/Users/blubs}/.theme_state" 2>/dev/null || echo cyberpunk)"
+echo "Utilitários do tema: sudo pacman -S --needed fzf eza bat git-delta   (depois: theme set <tema> para ativar as cores)"
+
 echo "tmux: abra o tmux e aperte prefixo + I (ou rode ~/.tmux/plugins/tpm/bin/install_plugins dentro do tmux)"
 echo "Pacotes: veja packages/ (ex.: sudo pacman -S --needed - < packages/pacman-explicit.txt)"
 echo "Pronto. Abra um novo terminal. Backup dos arquivos antigos em ~/.dotfiles-backup-$stamp"

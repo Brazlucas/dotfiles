@@ -1,0 +1,64 @@
+# Catppuccin Mocha — Pastel escuro e confortável
+name  = "catppuccin-mocha"
+label = "Catppuccin Mocha"
+kind  = "dark"
+
+[colors]
+bg      = "#1e1e2e"
+bg_alt  = "#313244"
+bg_deep = "#181825"
+fg      = "#cdd6f4"
+dim     = "#6c7086"
+subtle  = "#9399b2"
+delim   = "#a6adc8"
+line    = "#45475a"
+sel     = "#45475a"
+sel_fg  = "#cdd6f4"
+accent1 = "#cba6f7"
+accent2 = "#89dceb"
+red     = "#f38ba8"
+green   = "#a6e3a1"
+yellow  = "#f9e2af"
+blue    = "#89b4fa"
+magenta = "#f5c2e7"
+cyan    = "#94e2d5"
+white   = "#ffffff"
+ansi    = ["#45475a", "#f38ba8", "#a6e3a1", "#f9e2af", "#89b4fa", "#f5c2e7", "#94e2d5", "#bac2de"]
+brights = ["#585b70", "#f38ba8", "#a6e3a1", "#f9e2af", "#89b4fa", "#f5c2e7", "#94e2d5", "#a6adc8"]
+
+[diff]
+add    = "#2a3a2f"
+change = "#2a3550"
+delete = "#44283a"
+text   = "#3a4a6b"
+
+[tabbar]
+bg          = "#181825"
+active_bg   = "#1e1e2e"
+active_fg   = "#89dceb"
+inactive_bg = "#181825"
+inactive_fg = "#6c7086"
+hover_bg    = "#313244"
+hover_fg    = "#cba6f7"
+
+[mascot]
+body        = "#f5c2e7"
+caption     = "#89dceb"
+caption_dim = "#6c7086"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#89dceb", right = "#cba6f7", bottom = "#f5c2e7", left = "#cba6f7" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "native"

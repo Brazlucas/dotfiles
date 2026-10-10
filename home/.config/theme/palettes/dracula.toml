@@ -1,0 +1,64 @@
+# Dracula — Roxo e rosa clássicos
+name  = "dracula"
+label = "Dracula"
+kind  = "dark"
+
+[colors]
+bg      = "#282a36"
+bg_alt  = "#343746"
+bg_deep = "#21222c"
+fg      = "#f8f8f2"
+dim     = "#6272a4"
+subtle  = "#8b95c9"
+delim   = "#c0c4d6"
+line    = "#44475a"
+sel     = "#44475a"
+sel_fg  = "#f8f8f2"
+accent1 = "#ff79c6"
+accent2 = "#8be9fd"
+red     = "#ff5555"
+green   = "#50fa7b"
+yellow  = "#f1fa8c"
+blue    = "#bd93f9"
+magenta = "#bd93f9"
+cyan    = "#8be9fd"
+white   = "#ffffff"
+ansi    = ["#21222c", "#ff5555", "#50fa7b", "#f1fa8c", "#bd93f9", "#ff79c6", "#8be9fd", "#f8f8f2"]
+brights = ["#6272a4", "#ff6e6e", "#69ff94", "#ffffa5", "#d6acff", "#ff92df", "#a4ffff", "#ffffff"]
+
+[diff]
+add    = "#1f3a2c"
+change = "#2a3550"
+delete = "#4a2630"
+text   = "#44475a"
+
+[tabbar]
+bg          = "#21222c"
+active_bg   = "#282a36"
+active_fg   = "#8be9fd"
+inactive_bg = "#21222c"
+inactive_fg = "#6272a4"
+hover_bg    = "#343746"
+hover_fg    = "#ff79c6"
+
+[mascot]
+body        = "#ff79c6"
+caption     = "#8be9fd"
+caption_dim = "#6272a4"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#8be9fd", right = "#bd93f9", bottom = "#ff79c6", left = "#ff79c6" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "dracula"

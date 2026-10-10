@@ -3,12 +3,12 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-FILES=(.zshrc .oh-my-zsh/custom/themes/cyberpunk.zsh-theme .tmux.conf .nanorc .tool-versions .gitconfig tmuxpconf.yaml)
+FILES=(.zshrc .tmux.conf .nanorc .tool-versions .gitconfig tmuxpconf.yaml)
 DIRS=(.tmuxp
   .config/nvim .config/nvim.astronvim
   .config/btop .config/htop .config/lazygit .config/lazydocker .config/gitui
   .config/git .config/neofetch .config/thefuck .config/tmux .config/yay
-  .config/psysh .config/systemd .config/facilita .config/cyber)
+  .config/psysh .config/systemd .config/facilita .config/cyber .config/theme)
 # .config/pgcli: só o arquivo de config (history/log ficam de fora)
 EXTRA=(.config/pgcli/config)
 
@@ -19,16 +19,20 @@ done
 for d in "${DIRS[@]}"; do
   [ -d "$HOME/$d" ] && mkdir -p "home/$d" && cp -a "$HOME/$d/." "home/$d/"
 done
-# WezTerm roda no Windows: copia config e assets para windows/
+# WezTerm roda no Windows: copia a config (o tema vem do sistema `theme`) para windows/
 WINHOME=${WINHOME:-/mnt/c/Users/blubs}
 rm -rf windows && mkdir -p windows
 for f in .wezterm.lua; do [ -e "$WINHOME/$f" ] && cp -a "$WINHOME/$f" "windows/$f"; done
-[ -d "$WINHOME/.wezterm_assets" ] && cp -a "$WINHOME/.wezterm_assets" windows/.wezterm_assets
 
-# exporta o tema do nvim como pacote independente (themes/cyberpunk.nvim)
-mkdir -p themes/cyberpunk.nvim/colors && cp "$HOME/.config/nvim/colors/cyberpunk.lua" themes/cyberpunk.nvim/colors/cyberpunk.lua
+# exporta cada tema do nvim como pacote independente (themes/<nome>.nvim) — nunca perde o tema
+for p in "$HOME"/.config/theme/palettes/*.toml; do
+  n=$(basename "$p" .toml); [ "$n" = classic ] && continue
+  "$HOME/.local/bin/theme" export nvim "$n" "$PWD/themes/$n.nvim" >/dev/null
+done
 
-# nunca versionar estes
+# nunca versionar estes (build é regenerado pelo `theme`)
+rm -rf home/.config/theme/build home/.config/theme/exports
+find home -name __pycache__ -prune -exec rm -rf {} + 2>/dev/null || true
 find home -name .git -prune -exec rm -rf {} + 2>/dev/null || true
 find home -name '*.log' -delete
 

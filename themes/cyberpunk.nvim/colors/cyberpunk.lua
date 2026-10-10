@@ -1,5 +1,4 @@
--- Cyberpunk: base wildcharm + fundo transparente (o vidro do WezTerm aparece) + acentos neon.
--- Liga/desliga com <leader>uz (ou Ctrl+Alt+G no WezTerm). Desligado = wildcharm, como era antes.
+-- cyberpunk: colorscheme exportado do sistema `theme` (autocontido). Base wildcharm + fundo transparente.
 vim.cmd("hi clear")
 if vim.fn.exists("syntax_on") == 1 then vim.cmd("syntax reset") end
 vim.o.termguicolors = true
@@ -7,11 +6,48 @@ vim.o.background = "dark"
 pcall(vim.cmd.colorscheme, "wildcharm")
 vim.g.colors_name = "cyberpunk"
 
-local c = {
-  fg = "#d3dcea", dim = "#5c6b80", panel = "#0d1117", deep = "#06080c", line = "#1f2a37",
-  cyan = "#05f2ff", pink = "#ff2a6d", blue = "#3d8bff", violet = "#b45cff",
-  mint = "#00ffa3", yellow = "#fcee0a", sel = "#12404a",
+local P = (function()
+return {
+  name = 'cyberpunk',
+  colorscheme = 'generated',
+  colors = {
+    bg = '#080b10',
+    bg_alt = '#0d1117',
+    bg_deep = '#06080c',
+    fg = '#d3dcea',
+    dim = '#5c6b80',
+    subtle = '#6f819a',
+    delim = '#8a9bb3',
+    line = '#1f2a37',
+    sel = '#12404a',
+    sel_fg = '#ffffff',
+    accent1 = '#ff2a6d',
+    accent2 = '#05f2ff',
+    red = '#ff2a6d',
+    green = '#00ffa3',
+    yellow = '#fcee0a',
+    blue = '#3d8bff',
+    magenta = '#b45cff',
+    cyan = '#05f2ff',
+    white = '#ffffff',
+  },
+  diff = {
+    add = '#06301f',
+    change = '#0c2440',
+    delete = '#3a0f1f',
+    text = '#12404a',
+  },
 }
+end)()
+local k = P.colors
+local c = {
+  fg = k.fg, dim = k.dim, panel = k.bg_alt, deep = k.bg_deep, line = k.line,
+  cyan = k.accent2, pink = k.accent1, blue = k.blue, violet = k.magenta,
+  mint = k.green, yellow = k.yellow, sel = k.sel, bg = k.bg,
+  subtle = k.subtle, delim = k.delim,
+}
+local D = P.diff
+
 local function hl(group, opts) vim.api.nvim_set_hl(0, group, opts) end
 
 -- fundo transparente
@@ -20,7 +56,7 @@ for _, g in ipairs({ "Normal", "NormalNC", "NormalFloat", "SignColumn", "EndOfBu
   "SnacksNormal", "SnacksPicterNormal" }) do
   hl(g, { fg = c.fg, bg = "NONE" })
 end
-hl("EndOfBuffer", { fg = "#080b10", bg = "NONE" })
+hl("EndOfBuffer", { fg = c.bg, bg = "NONE" })
 
 -- sintaxe
 hl("Comment", { fg = c.dim, italic = true })
@@ -42,22 +78,22 @@ hl("Include", { fg = c.violet })
 hl("Type", { fg = c.blue })
 hl("Structure", { fg = c.blue })
 hl("Special", { fg = c.cyan })
-hl("Delimiter", { fg = "#8a9bb3" })
+hl("Delimiter", { fg = c.delim })
 hl("Title", { fg = c.pink, bold = true })
 hl("Directory", { fg = c.cyan })
-hl("Todo", { fg = "#080b10", bg = c.yellow, bold = true })
+hl("Todo", { fg = c.bg, bg = c.yellow, bold = true })
 
 -- interface
-hl("Cursor", { fg = "#080b10", bg = c.pink })
+hl("Cursor", { fg = c.bg, bg = c.pink })
 hl("CursorLine", { bg = c.panel })
 hl("CursorLineNr", { fg = c.pink, bold = true })
 hl("LineNr", { fg = c.dim })
 hl("Visual", { bg = c.sel })
-hl("Search", { fg = "#080b10", bg = c.pink })
-hl("IncSearch", { fg = "#080b10", bg = c.cyan, bold = true })
-hl("CurSearch", { fg = "#080b10", bg = c.cyan, bold = true })
+hl("Search", { fg = c.bg, bg = c.pink })
+hl("IncSearch", { fg = c.bg, bg = c.cyan, bold = true })
+hl("CurSearch", { fg = c.bg, bg = c.cyan, bold = true })
 hl("MatchParen", { fg = c.cyan, bold = true, underline = true })
-hl("NonText", { fg = "#6f819a" })
+hl("NonText", { fg = c.subtle })
 hl("Whitespace", { fg = c.line })
 hl("ColorColumn", { bg = c.panel })
 hl("Folded", { fg = c.dim, bg = c.panel })
@@ -73,7 +109,7 @@ hl("StatusLine", { fg = c.fg, bg = c.deep })
 hl("StatusLineNC", { fg = c.dim, bg = c.deep })
 hl("TabLine", { fg = c.dim, bg = c.deep })
 hl("TabLineFill", { bg = c.deep })
-hl("TabLineSel", { fg = c.cyan, bg = "#080b10", bold = true })
+hl("TabLineSel", { fg = c.cyan, bg = c.bg, bold = true })
 
 -- diagnósticos e diff
 hl("DiagnosticError", { fg = c.pink })
@@ -84,18 +120,18 @@ hl("DiagnosticUnderlineError", { undercurl = true, sp = c.pink })
 hl("DiagnosticUnderlineWarn", { undercurl = true, sp = c.yellow })
 hl("DiagnosticUnderlineInfo", { undercurl = true, sp = c.cyan })
 hl("DiagnosticUnderlineHint", { undercurl = true, sp = c.blue })
-hl("DiffAdd", { bg = "#06301f" })
-hl("DiffChange", { bg = "#0c2440" })
-hl("DiffDelete", { bg = "#3a0f1f" })
-hl("DiffText", { bg = "#12404a" })
+hl("DiffAdd", { bg = D.add })
+hl("DiffChange", { bg = D.change })
+hl("DiffDelete", { bg = D.delete })
+hl("DiffText", { bg = D.text })
 hl("Added", { fg = c.mint })
 hl("Changed", { fg = c.blue })
 hl("Removed", { fg = c.pink })
 
 -- plugins
 -- picker (snacks): diretório/caminho legíveis em vez de quase invisíveis
-hl("SnacksPickerDir", { fg = "#6f819a" })
-hl("SnacksPickerPathHidden", { fg = "#6f819a" })
+hl("SnacksPickerDir", { fg = c.subtle })
+hl("SnacksPickerPathHidden", { fg = c.subtle })
 hl("SnacksPickerPathIgnored", { fg = c.dim })
 hl("SnacksPickerComment", { fg = c.dim })
 hl("SnacksPickerTotals", { fg = c.dim })

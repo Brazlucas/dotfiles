@@ -1,0 +1,21 @@
+# Tema: {{label}} — prompt em duas linhas (gerado por `theme`; não edite à mão)
+
+function _cyber_prompt_char {
+  git branch >/dev/null 2>&1 && echo '±' && return
+  echo '❯'
+}
+
+function _cyber_venv {
+  [[ -n "$VIRTUAL_ENV" ]] && echo " %F{{{dim}}}(%f%F{{{green}}}${VIRTUAL_ENV:t}%f%F{{{dim}}})%f"
+}
+
+PROMPT='%F{{{accent1}}}╭─%f %B%F{{{accent1}}}%n%f%b%F{{{dim}}}@%f%F{{{accent2}}}%m%f %F{{{dim}}}in%f %B%F{{{blue}}}%~%f%b$(git_prompt_info)$(_cyber_venv)
+%F{{{accent1}}}╰─%f%(?.%F{{{accent2}}}.%F{{{accent1}}})$(_cyber_prompt_char)%f '
+
+# exit code (se falhou) + hora, à direita
+RPROMPT='%(?..%F{{{accent1}}}✘ %?%f  )%F{{{dim}}}%D{%H:%M}%f'
+
+ZSH_THEME_GIT_PROMPT_PREFIX=" %F{{{dim}}}on%f %F{{{magenta}}} "
+ZSH_THEME_GIT_PROMPT_SUFFIX='%f'
+ZSH_THEME_GIT_PROMPT_DIRTY=' %F{{{accent1}}}✗'
+ZSH_THEME_GIT_PROMPT_CLEAN=' %F{{{green}}}✓'

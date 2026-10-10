@@ -17,10 +17,9 @@ return {
   {
     "LazyVim/LazyVim",
     opts = {
-      -- cyberpunk quando o estado global está ligado; senão o wildcharm de sempre
+      -- colorscheme vem do sistema de temas global (`theme`); classic = wildcharm de sempre
       colorscheme = function()
-        local cyber = require("config.cyber")
-        cyber.apply(cyber.is_on())
+        require("config.theme").apply()
       end,
     },
   },

@@ -1,0 +1,64 @@
+# Acid Jungle — Original: floresta escura com lima, amarelo e ciano
+name  = "acid-jungle"
+label = "Acid Jungle"
+kind  = "dark"
+
+[colors]
+bg      = "#0a110d"
+bg_alt  = "#101a14"
+bg_deep = "#070c09"
+fg      = "#d6e6d2"
+dim     = "#5f7a63"
+subtle  = "#7e9a82"
+delim   = "#9fb8a0"
+line    = "#1d2d22"
+sel     = "#1f4a2c"
+sel_fg  = "#ffffff"
+accent1 = "#b6ff3b"
+accent2 = "#ffd93d"
+red     = "#ff5d5d"
+green   = "#37e07a"
+yellow  = "#ffd93d"
+blue    = "#4fb8ff"
+magenta = "#d98bff"
+cyan    = "#3dffd0"
+white   = "#ffffff"
+ansi    = ["#101a14", "#ff5d5d", "#37e07a", "#ffd93d", "#4fb8ff", "#d98bff", "#3dffd0", "#d6e6d2"]
+brights = ["#3b5a42", "#ff8585", "#7dffaa", "#fff07a", "#8cd0ff", "#e8b5ff", "#8affe6", "#ffffff"]
+
+[diff]
+add    = "#0d3a1f"
+change = "#0f2f45"
+delete = "#3d1a1a"
+text   = "#1f4a2c"
+
+[tabbar]
+bg          = "#070c09"
+active_bg   = "#0a110d"
+active_fg   = "#ffd93d"
+inactive_bg = "#070c09"
+inactive_fg = "#5f7a63"
+hover_bg    = "#101a14"
+hover_fg    = "#b6ff3b"
+
+[mascot]
+body        = "#b6ff3b"
+caption     = "#ffd93d"
+caption_dim = "#5f7a63"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#b6ff3b", right = "#ffd93d", bottom = "#b6ff3b", left = "#ffd93d" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "gruvbox-dark"

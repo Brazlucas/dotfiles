@@ -1,0 +1,83 @@
+{{#if tmux=neon}}
+# ───────── Tema: {{label}} (gerado — não edite à mão) ─────────
+# paleta gerada de palettes/{{name}}.toml
+set -g status on
+set -g status-position bottom
+set -g status-interval 5
+set -g status-justify left
+set -g status-style "bg={{bg_deep}},fg={{dim}}"
+# opções legadas que sobrescrevem o status-style (removidas para não herdar cores antigas)
+set -gu status-bg
+set -gu status-fg
+set -g status-left-length 40
+set -g status-right-length 90
+
+# esquerda: sessão
+set -g status-left "#[bg={{accent1}},fg={{bg}},bold]  #S #[bg={{bg_deep}},fg={{accent1}},nobold] "
+
+# janelas
+set -g window-status-separator ""
+set -g window-status-format "#[bg={{bg_deep}},fg={{dim}}] #I #[fg={{dim}}]#W "
+set -g window-status-current-format "#[bg={{bg_deep}},fg={{accent2}}]#[bg={{accent2}},fg={{bg}},bold] #I  #W#{?window_zoomed_flag, 󰁌,} #[bg={{bg_deep}},fg={{accent2}},nobold]"
+set -g window-status-activity-style "fg={{yellow}}"
+set -g window-status-bell-style "fg={{accent1}},bold"
+
+# direita: prefixo ativo · pasta · hora
+set -g status-right "#{?client_prefix,#[bg={{yellow}}#,fg={{bg}}#,bold]  PREFIX #[default] ,}#[fg={{accent1}}]#[bg={{accent1}},fg={{bg}}]  #{b:pane_current_path} #[bg={{accent1}},fg={{accent2}}]#[bg={{accent2}},fg={{bg}},bold]  %H:%M "
+
+# painéis: borda neon
+set -g pane-border-style "fg={{line}}"
+set -g pane-active-border-style "fg={{accent1}}"
+set -g pane-border-lines heavy
+set -g display-panes-colour "{{accent2}}"
+set -g display-panes-active-colour "{{accent1}}"
+
+# mensagens, modo cópia e relógio
+set -g message-style "bg={{bg_alt}},fg={{accent2}},bold"
+set -g message-command-style "bg={{bg_alt}},fg={{accent1}},bold"
+set -g mode-style "bg={{sel}},fg={{sel_fg}}"
+set -g clock-mode-colour "{{accent2}}"
+
+{{#if neko}}
+# nova janela (prefixo + c) mostra o gato
+bind c new-window \; display-popup -E -T " #[fg={{accent1}},bold]neko " -w 44 -h 10 -b rounded -S "fg={{accent1}}" -s "bg={{bg}}" "zsh ~/.config/cyber/neko-popup.zsh"
+
+# gato ASCII rosa ao anexar (qualquer tecla pula; desligue com NEKO_OFF=1)
+set-hook -g client-attached 'display-popup -E -T " #[fg={{accent1}},bold]neko " -w 44 -h 10 -b rounded -S "fg={{accent1}}" -s "bg={{bg}}" "zsh ~/.config/cyber/neko-popup.zsh"'
+{{/if}}
+
+# atalho: prefixo + T liga/desliga o tema cyberpunk (tmux, WezTerm e nvim)
+bind T run-shell "~/.local/bin/theme toggle"
+{{#else}}
+# ───────── Tema: {{label}} (gerado — não edite à mão) ─────────
+# Restaura o estado original: barra roxa embaixo, sem popup do gato.
+set -g status on
+set -g status-position bottom
+set -g status-interval 15
+set -g status-justify left
+set -g status-style "bg=default,fg=default"
+set -g status-bg '#5f27cd'
+set -g status-fg white
+set -g status-left-length 10
+set -g status-right-length 40
+set -gu status-left
+set -gu status-right
+set -gu window-status-separator
+set -gu window-status-format
+set -gu window-status-current-format
+set -gu window-status-activity-style
+set -gu window-status-bell-style
+set -gu pane-border-style
+set -gu pane-active-border-style
+set -gu pane-border-lines
+set -gu display-panes-colour
+set -gu display-panes-active-colour
+set -gu message-style
+set -gu message-command-style
+set -gu mode-style
+set -gu clock-mode-colour
+set-hook -gu client-attached
+bind c new-window
+
+bind T run-shell "~/.local/bin/theme toggle"
+{{/if}}

@@ -1,0 +1,64 @@
+# Tokyo Night — Azul-noite suave com roxo e ciano
+name  = "tokyo-night"
+label = "Tokyo Night"
+kind  = "dark"
+
+[colors]
+bg      = "#1a1b26"
+bg_alt  = "#24283b"
+bg_deep = "#16161e"
+fg      = "#c0caf5"
+dim     = "#565f89"
+subtle  = "#737aa2"
+delim   = "#9aa5ce"
+line    = "#292e42"
+sel     = "#283457"
+sel_fg  = "#c0caf5"
+accent1 = "#bb9af7"
+accent2 = "#7dcfff"
+red     = "#f7768e"
+green   = "#9ece6a"
+yellow  = "#e0af68"
+blue    = "#7aa2f7"
+magenta = "#bb9af7"
+cyan    = "#7dcfff"
+white   = "#ffffff"
+ansi    = ["#15161e", "#f7768e", "#9ece6a", "#e0af68", "#7aa2f7", "#bb9af7", "#7dcfff", "#a9b1d6"]
+brights = ["#414868", "#f7768e", "#9ece6a", "#e0af68", "#7aa2f7", "#bb9af7", "#7dcfff", "#c0caf5"]
+
+[diff]
+add    = "#20303b"
+change = "#1f2d4a"
+delete = "#37222c"
+text   = "#2e3c64"
+
+[tabbar]
+bg          = "#16161e"
+active_bg   = "#1a1b26"
+active_fg   = "#7dcfff"
+inactive_bg = "#16161e"
+inactive_fg = "#565f89"
+hover_bg    = "#24283b"
+hover_fg    = "#bb9af7"
+
+[mascot]
+body        = "#bb9af7"
+caption     = "#7dcfff"
+caption_dim = "#565f89"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#7dcfff", right = "#7aa2f7", bottom = "#bb9af7", left = "#bb9af7" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "one-dark"
