@@ -25,6 +25,9 @@ rm -rf windows && mkdir -p windows
 for f in .wezterm.lua; do [ -e "$WINHOME/$f" ] && cp -a "$WINHOME/$f" "windows/$f"; done
 [ -d "$WINHOME/.wezterm_assets" ] && cp -a "$WINHOME/.wezterm_assets" windows/.wezterm_assets
 
+# exporta o tema do nvim como pacote independente (themes/cyberpunk.nvim)
+mkdir -p themes/cyberpunk.nvim/colors && cp "$HOME/.config/nvim/colors/cyberpunk.lua" themes/cyberpunk.nvim/colors/cyberpunk.lua
+
 # nunca versionar estes
 find home -name .git -prune -exec rm -rf {} + 2>/dev/null || true
 find home -name '*.log' -delete

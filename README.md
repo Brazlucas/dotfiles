@@ -15,6 +15,8 @@ Segredos (tokens do ngrok, `.git-credentials`, `.ssh`, `.aws`, `.npmrc`, histór
 ## Toggle do tema cyberpunk
 Um estado só (`C:\Users\<user>\.cyber_state`, `on`/`off`) controla WezTerm, tmux e nvim; desligado, tudo volta ao visual original.
 - WezTerm: `Ctrl+Alt+G` · tmux: `prefixo + T` · nvim: `<leader>uz` · terminal: `~/.config/cyber/toggle.sh [on|off]`
-- Glitch animado: WezTerm (`GLITCH` em `windows/.wezterm.lua` ajusta frequência/intensidade).
 - tmux: `cyber.conf` (neon) e `classic.conf` (original), escolhidos pelo estado.
 - nvim: colorscheme `cyberpunk` (transparente, `colors/cyberpunk.lua`) ↔ `wildcharm` (original).
+
+## Tema do nvim exportado
+`themes/cyberpunk.nvim/` — colorscheme independente (instruções no README da pasta).

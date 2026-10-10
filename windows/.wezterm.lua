@@ -224,7 +224,7 @@ if not CYBER then
   config.use_fancy_tab_bar = false
   config.hide_tab_bar_if_only_one_tab = true
 
-  -- ao desligar, descarta overrides de tema/glitch das janelas abertas
+  -- ao desligar, descarta overrides de tema das janelas abertas
   wezterm.on('window-config-reloaded', function(window)
     local o = window:get_config_overrides()
     if o and next(o) ~= nil then window:set_config_overrides({}) end
@@ -319,142 +319,14 @@ config.command_palette_rows = 12
 config.char_select_bg_color = '#0d1117'
 config.char_select_fg_color = '#05f2ff'
 
--- ───── Glitch animado ─────
--- Rajadas curtas de interferência: barras neon/blocos de pixel sobre o fundo e,
--- às vezes, o texto pisca em ciano/rosa. Ajuste a frequência aqui:
-local GLITCH = {
-  enabled = true,
-  gap_min = 2.0,   -- segundos mínimos entre rajadas
-  gap_max = 6.0,   -- segundos máximos entre rajadas
-  frames_min = 5,  -- quadros por rajada
-  frames_max = 10,
-  frame_ms_min = 55,
-  frame_ms_max = 130,
-  text_flicker = 0.45, -- chance de o texto piscar de cor num quadro
-  images = 8,
-}
-config.status_update_interval = 50
+-- Barra de status à direita: workspace + hora (atualiza a cada 2s, leve)
+config.status_update_interval = 2000
 
-local assets = wezterm.home_dir .. '/.wezterm_assets/'
-local glitch_state = {}
 local last_status = {}
-
-local function now()
-  local t = wezterm.time.now()
-  return tonumber(t:format('%s')) + (tonumber(t:format('%.3f')) or 0)
-end
-
-local function rand(a, b) return a + math.random() * (b - a) end
-
-local function scheme_bg(name)
-  local sc = (config.color_schemes[name] or wezterm.color.get_builtin_schemes()[name]) or {}
-  return sc.background or '#080b10'
-end
-
-local NEON = { '5,242,255', '255,42,109', '61,139,255', '255,255,255', '180,92,255', '0,255,163' }
-
--- faixas horizontais (ou verticais) aleatórias: lista de cores transparentes/neon
-local function band_colors(n, density, amin, amax)
-  local cols = {}
-  local i = 1
-  while i <= n do
-    local run = math.random(1, 3)
-    local c
-    if math.random() < density then
-      c = string.format('rgba(%s,%.2f)', NEON[math.random(1, #NEON)], rand(amin, amax))
-    else
-      c = 'rgba(0,0,0,0)'
-    end
-    for _ = 1, run do
-      cols[#cols + 1] = c
-      cols[#cols + 1] = c -- duplica para deixar a borda da faixa mais dura
-      i = i + 1
-    end
-  end
-  return cols
-end
-
-local function glitch_frame(overrides)
-  local name = overrides.color_scheme or config.color_scheme
-  local layers = {
-    { source = { Color = scheme_bg(name) }, width = '100%', height = '100%', opacity = 1.0 },
-    { -- faixas horizontais de interferência
-      source = { Gradient = {
-        colors = band_colors(math.random(28, 56), 0.35, 0.45, 0.95),
-        orientation = 'Vertical',
-        blend = 'Rgb',
-        noise = 48,
-      } },
-      width = '100%', height = '100%',
-      horizontal_offset = math.random(-30, 30),
-      opacity = 1.0,
-    },
-  }
-  if math.random() < 0.6 then
-    layers[#layers + 1] = { -- riscos verticais finos
-      source = { Gradient = {
-        colors = band_colors(math.random(60, 120), 0.12, 0.25, 0.7),
-        orientation = 'Horizontal',
-        blend = 'Rgb',
-      } },
-      width = '100%', height = '100%',
-      opacity = 0.9,
-    }
-  end
-  if math.random() < 0.5 then
-    local tint = ({ 'rgba(5,242,255,0.16)', 'rgba(255,42,109,0.16)', 'rgba(255,255,255,0.10)' })[math.random(1, 3)]
-    layers[#layers + 1] = { source = { Color = tint }, width = '100%', height = '100%', opacity = 1.0 }
-  end
-  overrides.background = layers
-  if math.random() < GLITCH.text_flicker then
-    local fg = ({ '#05f2ff', '#ff2a6d', '#ffffff', '#3d8bff' })[math.random(1, 4)]
-    local c = {}
-    for k, v in pairs(config.colors) do c[k] = v end
-    c.foreground = fg
-    overrides.colors = c
-  else
-    overrides.colors = nil
-  end
-end
-
-local function tick_glitch(window)
-  if not GLITCH.enabled then return end
-  local id = window:window_id()
-  local st = glitch_state[id]
-  local t = now()
-  if not st then
-    st = { frames = 0, next = t + rand(GLITCH.gap_min, GLITCH.gap_max), until_ = 0 }
-    glitch_state[id] = st
-  end
-  if st.frames == 0 then
-    if t >= st.next and window:is_focused() then
-      st.frames = math.random(GLITCH.frames_min, GLITCH.frames_max)
-      st.until_ = 0
-    else
-      return
-    end
-  end
-  if t < st.until_ then return end
-
-  local overrides = window:get_config_overrides() or {}
-  st.frames = st.frames - 1
-  if st.frames <= 0 then
-    overrides.background = nil
-    overrides.colors = nil
-    st.frames = 0
-    st.next = t + rand(GLITCH.gap_min, GLITCH.gap_max)
-  else
-    glitch_frame(overrides)
-    st.until_ = t + rand(GLITCH.frame_ms_min, GLITCH.frame_ms_max) / 1000
-  end
-  window:set_config_overrides(overrides)
-end
-
--- Barra de status à direita (workspace + hora) e motor do glitch
 wezterm.on('update-status', function(window, pane)
   local id = window:window_id()
-  local sc = config.color_schemes[window:effective_config().color_scheme]
-    or wezterm.color.get_builtin_schemes()[window:effective_config().color_scheme] or {}
+  local name = window:effective_config().color_scheme
+  local sc = config.color_schemes[name] or wezterm.color.get_builtin_schemes()[name] or {}
   local accent = (sc.ansi and sc.ansi[7]) or '#05f2ff'
   local hot = (sc.ansi and sc.ansi[2]) or '#ff2a6d'
   local dim = (sc.ansi and sc.ansi[5]) or '#5a6199'
@@ -471,7 +343,6 @@ wezterm.on('update-status', function(window, pane)
     last_status[id] = text
     window:set_right_status(text)
   end
-  tick_glitch(window)
 end)
 
 return config
