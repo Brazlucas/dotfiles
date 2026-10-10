@@ -29,8 +29,10 @@ clone https://github.com/marlonrichert/zsh-autocomplete zsh-autocomplete
 # dependência do zsh-autocomplete (o .zshrc já aponta o fpath para ela)
 [ -d "$HOME/.cache/zsh/zasync" ] || git clone --depth 1 https://github.com/marlonrichert/zasync "$HOME/.cache/zsh/zasync"
 
-# tmux plugins
+# tmux plugins (tpm instala os demais: sensible, yank...)
+[ -d "$HOME/.tmux/plugins/tpm" ] || git clone --depth 1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 [ -d "$HOME/.tmux/plugins/tmux-resurrect" ] || git clone --depth 1 https://github.com/tmux-plugins/tmux-resurrect "$HOME/.tmux/plugins/tmux-resurrect"
 
+echo "tmux: abra o tmux e aperte prefixo + I (ou rode ~/.tmux/plugins/tpm/bin/install_plugins dentro do tmux)"
 echo "Pacotes: veja packages/ (ex.: sudo pacman -S --needed - < packages/pacman-explicit.txt)"
 echo "Pronto. Abra um novo terminal. Backup dos arquivos antigos em ~/.dotfiles-backup-$stamp"
