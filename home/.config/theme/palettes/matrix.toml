@@ -1,0 +1,64 @@
+# Matrix — Fósforo verde sobre preto — hacker clássico
+name  = "matrix"
+label = "Matrix"
+kind  = "dark"
+
+[colors]
+bg      = "#020d05"
+bg_alt  = "#07170b"
+bg_deep = "#010802"
+fg      = "#8aff9a"
+dim     = "#2f7a45"
+subtle  = "#3fa35c"
+delim   = "#5ccc7a"
+line    = "#0d2a14"
+sel     = "#0f4a22"
+sel_fg  = "#d9ffe0"
+accent1 = "#00ff41"
+accent2 = "#7dffb2"
+red     = "#ff5555"
+green   = "#00ff41"
+yellow  = "#d7ff5e"
+blue    = "#00c8a0"
+magenta = "#2bff9a"
+cyan    = "#7dffb2"
+white   = "#ffffff"
+ansi    = ["#07170b", "#ff5555", "#00ff41", "#d7ff5e", "#00c8a0", "#2bff9a", "#7dffb2", "#8aff9a"]
+brights = ["#2f7a45", "#ff7a7a", "#66ff8a", "#eaff9a", "#33e0c0", "#66ffbd", "#a8ffd0", "#d9ffe0"]
+
+[diff]
+add    = "#023d11"
+change = "#023224"
+delete = "#351b15"
+text   = "#0f4a22"
+
+[tabbar]
+bg          = "#010802"
+active_bg   = "#020d05"
+active_fg   = "#7dffb2"
+inactive_bg = "#010802"
+inactive_fg = "#2f7a45"
+hover_bg    = "#07170b"
+hover_fg    = "#00ff41"
+
+[mascot]
+body        = "#00ff41"
+caption     = "#7dffb2"
+caption_dim = "#2f7a45"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#7dffb2", right = "#7dffb2", bottom = "#00ff41", left = "#00ff41" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "gruvbox-dark"

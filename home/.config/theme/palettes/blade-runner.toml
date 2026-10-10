@@ -1,0 +1,64 @@
+# Blade Runner — Original: noite chuvosa com laranja-néon e ciano
+name  = "blade-runner"
+label = "Blade Runner"
+kind  = "dark"
+
+[colors]
+bg      = "#0a0d14"
+bg_alt  = "#0f141d"
+bg_deep = "#070a10"
+fg      = "#d5dbe6"
+dim     = "#566377"
+subtle  = "#74839b"
+delim   = "#9aa8bf"
+line    = "#1c2433"
+sel     = "#173a4a"
+sel_fg  = "#d5dbe6"
+accent1 = "#ff7a1a"
+accent2 = "#19e3e8"
+red     = "#ff3864"
+green   = "#3ddc97"
+yellow  = "#ffd23f"
+blue    = "#3a8dff"
+magenta = "#c97bff"
+cyan    = "#19e3e8"
+white   = "#ffffff"
+ansi    = ["#0f141d", "#ff3864", "#3ddc97", "#ffd23f", "#3a8dff", "#c97bff", "#19e3e8", "#d5dbe6"]
+brights = ["#3b475b", "#ff6485", "#6ef0b8", "#ffe27a", "#6aabff", "#dba3ff", "#6af1f4", "#ffffff"]
+
+[diff]
+add    = "#14362e"
+change = "#142743"
+delete = "#3b1624"
+text   = "#173a4a"
+
+[tabbar]
+bg          = "#070a10"
+active_bg   = "#0a0d14"
+active_fg   = "#19e3e8"
+inactive_bg = "#070a10"
+inactive_fg = "#566377"
+hover_bg    = "#0f141d"
+hover_fg    = "#ff7a1a"
+
+[mascot]
+body        = "#ff7a1a"
+caption     = "#19e3e8"
+caption_dim = "#566377"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#19e3e8", right = "#19e3e8", bottom = "#ff7a1a", left = "#ff7a1a" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "monokai"

@@ -1,0 +1,64 @@
+# Ayu Mirage — Azul-acinzentado com laranja e ciano suaves
+name  = "ayu-mirage"
+label = "Ayu Mirage"
+kind  = "dark"
+
+[colors]
+bg      = "#1f2430"
+bg_alt  = "#232834"
+bg_deep = "#1a1f29"
+fg      = "#cccac2"
+dim     = "#707a8c"
+subtle  = "#8a9199"
+delim   = "#b3b1ad"
+line    = "#2d3340"
+sel     = "#33415e"
+sel_fg  = "#cccac2"
+accent1 = "#ffa659"
+accent2 = "#73d0ff"
+red     = "#f28779"
+green   = "#d5ff80"
+yellow  = "#ffcc66"
+blue    = "#73d0ff"
+magenta = "#dfbfff"
+cyan    = "#95e6cb"
+white   = "#ffffff"
+ansi    = ["#171b24", "#ed8274", "#87d96c", "#facc6e", "#6cc7f6", "#dabafa", "#90e1c6", "#c7c7c7"]
+brights = ["#686868", "#f28779", "#d5ff80", "#ffcc66", "#73d0ff", "#dfbfff", "#95e6cb", "#ffffff"]
+
+[diff]
+add    = "#435040"
+change = "#304659"
+delete = "#49383f"
+text   = "#33415e"
+
+[tabbar]
+bg          = "#1a1f29"
+active_bg   = "#1f2430"
+active_fg   = "#73d0ff"
+inactive_bg = "#1a1f29"
+inactive_fg = "#707a8c"
+hover_bg    = "#232834"
+hover_fg    = "#ffa659"
+
+[mascot]
+body        = "#ffa659"
+caption     = "#73d0ff"
+caption_dim = "#707a8c"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#73d0ff", right = "#73d0ff", bottom = "#ffa659", left = "#ffa659" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "native"

@@ -1,0 +1,64 @@
+# Solarized Dark — Teal profundo com contraste calibrado
+name  = "solarized-dark"
+label = "Solarized Dark"
+kind  = "dark"
+
+[colors]
+bg      = "#002b36"
+bg_alt  = "#073642"
+bg_deep = "#00212b"
+fg      = "#839496"
+dim     = "#586e75"
+subtle  = "#657b83"
+delim   = "#93a1a1"
+line    = "#0d4452"
+sel     = "#0f4a58"
+sel_fg  = "#eee8d5"
+accent1 = "#d33682"
+accent2 = "#2aa198"
+red     = "#dc322f"
+green   = "#859900"
+yellow  = "#b58900"
+blue    = "#268bd2"
+magenta = "#d33682"
+cyan    = "#2aa198"
+white   = "#ffffff"
+ansi    = ["#073642", "#dc322f", "#859900", "#b58900", "#268bd2", "#d33682", "#2aa198", "#eee8d5"]
+brights = ["#586e75", "#cb4b16", "#859900", "#b58900", "#268bd2", "#6c71c4", "#2aa198", "#fdf6e3"]
+
+[diff]
+add    = "#1b412b"
+change = "#083e55"
+delete = "#2c2c35"
+text   = "#0f4a58"
+
+[tabbar]
+bg          = "#00212b"
+active_bg   = "#002b36"
+active_fg   = "#2aa198"
+inactive_bg = "#00212b"
+inactive_fg = "#586e75"
+hover_bg    = "#073642"
+hover_fg    = "#d33682"
+
+[mascot]
+body        = "#d33682"
+caption     = "#2aa198"
+caption_dim = "#586e75"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#2aa198", right = "#2aa198", bottom = "#d33682", left = "#d33682" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "solarized-dark"

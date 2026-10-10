@@ -1,0 +1,64 @@
+# Everforest — Floresta suave: verdes e tons terrosos de baixo contraste
+name  = "everforest"
+label = "Everforest"
+kind  = "dark"
+
+[colors]
+bg      = "#2d353b"
+bg_alt  = "#343f44"
+bg_deep = "#272e33"
+fg      = "#d3c6aa"
+dim     = "#859289"
+subtle  = "#9da9a0"
+delim   = "#a7c080"
+line    = "#475258"
+sel     = "#3d484d"
+sel_fg  = "#d3c6aa"
+accent1 = "#a7c080"
+accent2 = "#dbbc7f"
+red     = "#e67e80"
+green   = "#a7c080"
+yellow  = "#dbbc7f"
+blue    = "#7fbbb3"
+magenta = "#d699b6"
+cyan    = "#83c092"
+white   = "#ffffff"
+ansi    = ["#343f44", "#e67e80", "#a7c080", "#dbbc7f", "#7fbbb3", "#d699b6", "#83c092", "#d3c6aa"]
+brights = ["#859289", "#e67e80", "#a7c080", "#dbbc7f", "#7fbbb3", "#d699b6", "#83c092", "#fffbef"]
+
+[diff]
+add    = "#455149"
+change = "#3d5053"
+delete = "#524449"
+text   = "#3d484d"
+
+[tabbar]
+bg          = "#272e33"
+active_bg   = "#2d353b"
+active_fg   = "#dbbc7f"
+inactive_bg = "#272e33"
+inactive_fg = "#859289"
+hover_bg    = "#343f44"
+hover_fg    = "#a7c080"
+
+[mascot]
+body        = "#a7c080"
+caption     = "#dbbc7f"
+caption_dim = "#859289"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#dbbc7f", right = "#dbbc7f", bottom = "#a7c080", left = "#a7c080" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "gruvbox-dark"

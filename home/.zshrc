@@ -25,8 +25,9 @@ ZSH_THEME="$(cat ~/.config/theme/build/current/zsh_theme 2>/dev/null || echo suv
 
 source $ZSH/oh-my-zsh.sh
 
-# Cores do tema ativo para ls/eza, fzf, bat, lazygit, ripgrep e plugins do zsh (gerado por `theme`)
-[[ -r ~/.config/theme/build/current/env.zsh ]] && source ~/.config/theme/build/current/env.zsh
+# Cores e prompt do tema ativo (ls/eza, fzf, bat, lazygit, ripgrep, plugins): aplica agora e
+# acompanha `theme set/toggle/next` a cada prompt, sem precisar de exec zsh
+[[ -r ~/.config/theme/zsh-sync.zsh ]] && source ~/.config/theme/zsh-sync.zsh
  
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,

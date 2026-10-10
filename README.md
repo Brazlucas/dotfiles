@@ -19,11 +19,11 @@ Um tema é **só um arquivo de paleta** (`home/.config/theme/palettes/<nome>.tom
 | Claude Code | `~/.claude/themes/<tema>.json` + `theme` no `settings.json` |
 | bat · delta · lazygit · btop · ripgrep · pgcli | tema/estilo equivalente |
 
-**Temas:** `cyberpunk` (padrão), `tokyo-night`, `catppuccin-mocha`, `dracula`, `acid-jungle` (original: lima/amarelo/ciano) e `classic` (o visual original antes de tudo isso).
+**Temas (16 + o original):** `cyberpunk` (padrão), `tokyo-night`, `catppuccin-mocha`, `dracula`, `gruvbox-dark`, `nord`, `one-dark`, `rose-pine`, `kanagawa`, `everforest`, `solarized-dark`, `synthwave-84`, `matrix`, `ayu-mirage` e os originais `acid-jungle` (lima/amarelo/ciano) e `blade-runner` (laranja-néon/ciano). `classic` é o visual de antes de tudo isso e fica fora do ciclo `next/prev`.
 
 ```sh
 theme list              # lista e marca o ativo
-theme set tokyo-night   # troca tudo (WezTerm, tmux e nvim recarregam sozinhos; zsh: exec zsh)
+theme set tokyo-night   # troca tudo; WezTerm, tmux, nvim e os shells abertos (zsh) acompanham sozinhos
 theme toggle            # ativa/desativa (último tema <-> classic)
 theme next | prev       # cicla
 theme export nvim <t>   # colorscheme do nvim autocontido (pasta themes/<t>.nvim)

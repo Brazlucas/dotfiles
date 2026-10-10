@@ -1,0 +1,64 @@
+# Synthwave '84 — Anos 80: roxo-noite com rosa e ciano elétricos
+name  = "synthwave-84"
+label = "Synthwave '84"
+kind  = "dark"
+
+[colors]
+bg      = "#262335"
+bg_alt  = "#2a2139"
+bg_deep = "#1e1a2e"
+fg      = "#f4eeee"
+dim     = "#848bbd"
+subtle  = "#a9a1c9"
+delim   = "#c5bde0"
+line    = "#34294f"
+sel     = "#463465"
+sel_fg  = "#f4eeee"
+accent1 = "#ff7edb"
+accent2 = "#36f9f6"
+red     = "#fe4450"
+green   = "#72f1b8"
+yellow  = "#fede5d"
+blue    = "#6c8cff"
+magenta = "#ff7edb"
+cyan    = "#36f9f6"
+white   = "#ffffff"
+ansi    = ["#2a2139", "#fe4450", "#72f1b8", "#fede5d", "#6c8cff", "#ff7edb", "#36f9f6", "#f4eeee"]
+brights = ["#848bbd", "#ff6b73", "#8dffd0", "#fff08a", "#8fa8ff", "#ff9fe6", "#7afffc", "#ffffff"]
+
+[diff]
+add    = "#354c4f"
+change = "#34385d"
+delete = "#512a3a"
+text   = "#463465"
+
+[tabbar]
+bg          = "#1e1a2e"
+active_bg   = "#262335"
+active_fg   = "#36f9f6"
+inactive_bg = "#1e1a2e"
+inactive_fg = "#848bbd"
+hover_bg    = "#2a2139"
+hover_fg    = "#ff7edb"
+
+[mascot]
+body        = "#ff7edb"
+caption     = "#36f9f6"
+caption_dim = "#848bbd"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#36f9f6", right = "#36f9f6", bottom = "#ff7edb", left = "#ff7edb" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "monokai"

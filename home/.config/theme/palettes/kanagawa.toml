@@ -1,0 +1,64 @@
+# Kanagawa — Tinta japonesa: azul-índigo e tons de papel
+name  = "kanagawa"
+label = "Kanagawa"
+kind  = "dark"
+
+[colors]
+bg      = "#1f1f28"
+bg_alt  = "#2a2a37"
+bg_deep = "#16161d"
+fg      = "#dcd7ba"
+dim     = "#727169"
+subtle  = "#938aa9"
+delim   = "#c8c093"
+line    = "#363646"
+sel     = "#2d4f67"
+sel_fg  = "#dcd7ba"
+accent1 = "#ff9e3b"
+accent2 = "#7fb4ca"
+red     = "#c34043"
+green   = "#76946a"
+yellow  = "#c0a36e"
+blue    = "#7e9cd8"
+magenta = "#957fb8"
+cyan    = "#6a9589"
+white   = "#ffffff"
+ansi    = ["#090618", "#c34043", "#76946a", "#c0a36e", "#7e9cd8", "#957fb8", "#6a9589", "#c8c093"]
+brights = ["#727169", "#e82424", "#98bb6c", "#e6c384", "#7fb4ca", "#938aa9", "#7aa89f", "#dcd7ba"]
+
+[diff]
+add    = "#303635"
+change = "#32384b"
+delete = "#40262d"
+text   = "#2d4f67"
+
+[tabbar]
+bg          = "#16161d"
+active_bg   = "#1f1f28"
+active_fg   = "#7fb4ca"
+inactive_bg = "#16161d"
+inactive_fg = "#727169"
+hover_bg    = "#2a2a37"
+hover_fg    = "#ff9e3b"
+
+[mascot]
+body        = "#ff9e3b"
+caption     = "#7fb4ca"
+caption_dim = "#727169"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#7fb4ca", right = "#7fb4ca", bottom = "#ff9e3b", left = "#ff9e3b" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "native"

@@ -1,0 +1,64 @@
+# Rosé Pine — Roxo-noite suave com rosa e dourado
+name  = "rose-pine"
+label = "Rosé Pine"
+kind  = "dark"
+
+[colors]
+bg      = "#191724"
+bg_alt  = "#1f1d2e"
+bg_deep = "#16141f"
+fg      = "#e0def4"
+dim     = "#6e6a86"
+subtle  = "#908caa"
+delim   = "#908caa"
+line    = "#26233a"
+sel     = "#403d52"
+sel_fg  = "#e0def4"
+accent1 = "#c4a7e7"
+accent2 = "#9ccfd8"
+red     = "#eb6f92"
+green   = "#31748f"
+yellow  = "#f6c177"
+blue    = "#9ccfd8"
+magenta = "#c4a7e7"
+cyan    = "#ebbcba"
+white   = "#ffffff"
+ansi    = ["#26233a", "#eb6f92", "#31748f", "#f6c177", "#9ccfd8", "#c4a7e7", "#ebbcba", "#e0def4"]
+brights = ["#6e6a86", "#eb6f92", "#3e8fb0", "#f6c177", "#9ccfd8", "#c4a7e7", "#ebbcba", "#e0def4"]
+
+[diff]
+add    = "#1e2a39"
+change = "#333c48"
+delete = "#43293a"
+text   = "#403d52"
+
+[tabbar]
+bg          = "#16141f"
+active_bg   = "#191724"
+active_fg   = "#9ccfd8"
+inactive_bg = "#16141f"
+inactive_fg = "#6e6a86"
+hover_bg    = "#1f1d2e"
+hover_fg    = "#c4a7e7"
+
+[mascot]
+body        = "#c4a7e7"
+caption     = "#9ccfd8"
+caption_dim = "#6e6a86"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#9ccfd8", right = "#9ccfd8", bottom = "#c4a7e7", left = "#c4a7e7" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "native"

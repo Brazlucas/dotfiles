@@ -252,6 +252,9 @@ def install(name):
     if cur.is_symlink() or cur.exists():
         cur.unlink()
     cur.symlink_to(name)
+    # marcador (nome + hora) que os shells observam para recarregar cores/prompt
+    import time
+    (BUILD / ".active").write_text(f"{name} {time.time()}")
     src = BUILD / name
     write(HOME / ".oh-my-zsh" / "custom" / "themes" / "theme-active.zsh-theme",
           (src / "theme-active.zsh-theme").read_text(encoding="utf-8"))

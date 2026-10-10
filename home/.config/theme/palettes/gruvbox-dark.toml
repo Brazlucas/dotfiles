@@ -1,0 +1,64 @@
+# Gruvbox Dark — Retrô quente: marrom, laranja e verde-oliva
+name  = "gruvbox-dark"
+label = "Gruvbox Dark"
+kind  = "dark"
+
+[colors]
+bg      = "#282828"
+bg_alt  = "#3c3836"
+bg_deep = "#1d2021"
+fg      = "#ebdbb2"
+dim     = "#928374"
+subtle  = "#a89984"
+delim   = "#bdae93"
+line    = "#504945"
+sel     = "#504945"
+sel_fg  = "#ebdbb2"
+accent1 = "#fe8019"
+accent2 = "#8ec07c"
+red     = "#fb4934"
+green   = "#b8bb26"
+yellow  = "#fabd2f"
+blue    = "#83a598"
+magenta = "#d3869b"
+cyan    = "#8ec07c"
+white   = "#ffffff"
+ansi    = ["#282828", "#cc241d", "#98971a", "#d79921", "#458588", "#b16286", "#689d6a", "#a89984"]
+brights = ["#928374", "#fb4934", "#b8bb26", "#fabd2f", "#83a598", "#d3869b", "#8ec07c", "#ebdbb2"]
+
+[diff]
+add    = "#454528"
+change = "#3a413e"
+delete = "#522f2a"
+text   = "#504945"
+
+[tabbar]
+bg          = "#1d2021"
+active_bg   = "#282828"
+active_fg   = "#8ec07c"
+inactive_bg = "#1d2021"
+inactive_fg = "#928374"
+hover_bg    = "#3c3836"
+hover_fg    = "#fe8019"
+
+[mascot]
+body        = "#fe8019"
+caption     = "#8ec07c"
+caption_dim = "#928374"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#8ec07c", right = "#8ec07c", bottom = "#fe8019", left = "#fe8019" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "custom"
+colorize    = true
+pgcli_style = "gruvbox-dark"
