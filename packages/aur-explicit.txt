@@ -1,0 +1,8 @@
+git-credential-manager
+neofetch
+ngrok
+php83
+php83-gd
+php83-intl
+yay
+yay-debug

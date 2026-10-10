@@ -24,7 +24,7 @@ find home -name .git -prune -exec rm -rf {} + 2>/dev/null || true
 find home -name '*.log' -delete
 
 mkdir -p packages
-apt-mark showmanual 2>/dev/null | sort > packages/apt-manual.txt || true
+{ pacman -Qqen > packages/pacman-explicit.txt; pacman -Qqem > packages/aur-explicit.txt; } 2>/dev/null || true
 npm ls -g --depth=0 --parseable 2>/dev/null | tail -n +2 | xargs -n1 basename > packages/npm-global.txt 2>/dev/null || true
 pip list --user --format=freeze 2>/dev/null > packages/pip-user.txt || true
 asdf plugin list 2>/dev/null > packages/asdf-plugins.txt || true

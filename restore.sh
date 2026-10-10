@@ -25,5 +25,5 @@ clone https://github.com/marlonrichert/zsh-autocomplete zsh-autocomplete
 # tmux plugins
 [ -d "$HOME/.tmux/plugins/tmux-resurrect" ] || git clone --depth 1 https://github.com/tmux-plugins/tmux-resurrect "$HOME/.tmux/plugins/tmux-resurrect"
 
-echo "Pacotes: veja packages/ (ex.: xargs -a packages/apt-manual.txt sudo apt install -y)"
+echo "Pacotes: veja packages/ (ex.: sudo pacman -S --needed - < packages/pacman-explicit.txt)"
 echo "Pronto. Abra um novo terminal. Backup dos arquivos antigos em ~/.dotfiles-backup-$stamp"
