@@ -11,3 +11,10 @@ Segredos (tokens do ngrok, `.git-credentials`, `.ssh`, `.aws`, `.npmrc`, histór
 - **WezTerm** (`windows/.wezterm.lua`): tema Cyberpunk, vidro em camadas (Acrylic + gradiente + reflexo + scanlines), abas largas com ícone e X, status à direita. `Ctrl+Alt+T` cicla os temas.
 - **tmux** (`home/.config/tmux/tmux.conf`): barra superior neon, bordas rosa, popup com gato ASCII ao anexar.
 - **Gato ASCII** (`home/.config/cyber/`): `NEKO_OFF=1` desliga; qualquer tecla pula a animação.
+
+## Toggle do tema cyberpunk
+Um estado só (`C:\Users\<user>\.cyber_state`, `on`/`off`) controla WezTerm, tmux e nvim; desligado, tudo volta ao visual original.
+- WezTerm: `Ctrl+Alt+G` · tmux: `prefixo + T` · nvim: `<leader>uz` · terminal: `~/.config/cyber/toggle.sh [on|off]`
+- Glitch animado: WezTerm (`GLITCH` em `windows/.wezterm.lua` ajusta frequência/intensidade).
+- tmux: `cyber.conf` (neon) e `classic.conf` (original), escolhidos pelo estado.
+- nvim: colorscheme `cyberpunk` (transparente, `colors/cyberpunk.lua`) ↔ `wildcharm` (original).

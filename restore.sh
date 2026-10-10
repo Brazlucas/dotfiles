@@ -18,6 +18,9 @@ if [ -d windows ] && [ -d "$WINHOME" ]; then
   cp -a windows/. "$WINHOME/"
 fi
 
+# estado do tema cyberpunk (on/off) — usado por WezTerm, tmux e nvim
+[ -e "${WINHOME:-/mnt/c/Users/blubs}/.cyber_state" ] || printf 'on' > "${WINHOME:-/mnt/c/Users/blubs}/.cyber_state"
+
 # oh-my-zsh + plugins
 [ -d "$HOME/.oh-my-zsh" ] || sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 cp -a home/.zshrc "$HOME/.zshrc"

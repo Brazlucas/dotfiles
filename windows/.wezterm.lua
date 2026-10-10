@@ -1,6 +1,20 @@
 local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 
+-- Tema cyberpunk liga/desliga: estado em ~/.cyber_state ("on"/"off").
+-- Alterne com Ctrl+Alt+G (aqui), prefixo+T (tmux) ou <leader>uz (nvim).
+-- O WezTerm recarrega sozinho quando o arquivo muda.
+local state_file = wezterm.home_dir .. '/.cyber_state'
+local function cyber_on()
+  local f = io.open(state_file, 'r')
+  if not f then return true end
+  local v = f:read('*l')
+  f:close()
+  return v ~= 'off'
+end
+local CYBER = cyber_on()
+wezterm.add_to_config_reload_watch_list(state_file)
+
 -- Shell: abre o WSL (distro padrão) direto no home
 config.default_prog = { 'wsl.exe', '--cd', '~' }
 
@@ -144,52 +158,11 @@ local function frame_for(name)
   return frame
 end
 
--- Vidro: base em gradiente + reflexo (sheen) + brilho ciano na borda + scanlines CRT sutis
-local scan_png = wezterm.home_dir .. '/.wezterm_assets/scanlines.png'
-
-local function background_for(name)
-  local sc = scheme_def(name) or {}
-  local bg = wezterm.color.parse(sc.background or '#080b10')
-  local tint = (name == 'Cyberpunk') and '#1c0a38' or tostring(bg:lighten(0.07))
-  return {
-    { -- corpo do vidro (tingido, deixa o Acrylic aparecer por baixo)
-      source = { Gradient = {
-        colors = { tostring(bg), tint },
-        orientation = { Linear = { angle = -35.0 } },
-        blend = 'Rgb',
-      } },
-      width = '100%', height = '100%',
-      opacity = 0.80,
-    },
-    { -- reflexo diagonal no canto superior esquerdo + luz fria na borda inferior direita
-      source = { Gradient = {
-        colors = {
-          'rgba(255,255,255,0.13)',
-          'rgba(255,255,255,0.03)',
-          'rgba(255,255,255,0.00)',
-          'rgba(255,255,255,0.00)',
-          'rgba(5,242,255,0.07)',
-        },
-        orientation = { Linear = { angle = -35.0 } },
-        blend = 'Rgb',
-      } },
-      width = '100%', height = '100%',
-      opacity = 1.0,
-    },
-    { -- scanlines
-      source = { File = scan_png },
-      repeat_x = 'Repeat', repeat_y = 'Repeat',
-      width = 8, height = 4,
-      opacity = 0.10,
-    },
-  }
-end
-
 local saved_theme = load_theme()
 local valid = false
 for _, n in ipairs(themes) do if n == saved_theme then valid = true end end
-config.color_scheme = valid and saved_theme or 'Cyberpunk'
-config.window_frame = frame_for(config.color_scheme)
+config.color_scheme = CYBER and (valid and saved_theme or 'Cyberpunk') or 'Darcula'
+if CYBER then config.window_frame = frame_for(config.color_scheme) end
 
 local function cycle_theme(step)
   return wezterm.action_callback(function(window)
@@ -201,16 +174,27 @@ local function cycle_theme(step)
     end
     idx = (idx - 1 + step) % #themes + 1
     overrides.color_scheme = themes[idx]
-    overrides.window_frame = frame_for(themes[idx])
+    if CYBER then overrides.window_frame = frame_for(themes[idx]) end
     window:set_config_overrides(overrides)
-    save_theme(themes[idx])
+    if CYBER then save_theme(themes[idx]) end
     window:toast_notification('WezTerm', 'Tema: ' .. themes[idx], nil, 1500)
+  end)
+end
+
+-- Liga/desliga o tema em tudo (WezTerm, tmux, nvim) via script no WSL
+local function toggle_cyber()
+  return wezterm.action_callback(function(window)
+    wezterm.background_child_process {
+      'wsl.exe', '-e', '/home/luqueta/.config/cyber/toggle.sh', 'toggle',
+    }
+    window:toast_notification('WezTerm', CYBER and 'Cyberpunk: desligando…' or 'Cyberpunk: ligando…', nil, 1500)
   end)
 end
 
 config.keys = {
   { key = 't', mods = 'CTRL|ALT', action = cycle_theme(1) },
   { key = 'T', mods = 'CTRL|ALT|SHIFT', action = cycle_theme(-1) },
+  { key = 'g', mods = 'CTRL|ALT', action = toggle_cyber() },
 }
 
 -- Fonte
@@ -219,17 +203,41 @@ config.font = wezterm.font_with_fallback {
   'Cascadia Code',
   'Consolas',
 }
-config.font_size = 11.5
-config.line_height = 1.1
-config.harfbuzz_features = { 'calt=1', 'clig=1', 'liga=1' }
+config.font_size = CYBER and 11.5 or 11.0
+if CYBER then
+  config.line_height = 1.1
+  config.harfbuzz_features = { 'calt=1', 'clig=1', 'liga=1' }
+end
 
 -- Janela
 config.initial_cols = 130
 config.initial_rows = 35
-config.window_padding = { left = 14, right = 14, top = 10, bottom = 8 }
+config.scrollback_lines = 10000
+config.audible_bell = 'Disabled'
+
+if not CYBER then
+  -- ───── Visual original (tema desligado) ─────
+  config.window_padding = { left = 8, right = 8, top = 6, bottom = 6 }
+  config.win32_system_backdrop = 'Disable'
+  config.window_background_opacity = 1.0
+  config.text_background_opacity = 1.0
+  config.use_fancy_tab_bar = false
+  config.hide_tab_bar_if_only_one_tab = true
+
+  -- ao desligar, descarta overrides de tema/glitch das janelas abertas
+  wezterm.on('window-config-reloaded', function(window)
+    local o = window:get_config_overrides()
+    if o and next(o) ~= nil then window:set_config_overrides({}) end
+  end)
+
+  return config
+end
+
+-- ───── Visual cyberpunk ─────
+-- padding 0: o tmux encosta nas bordas da janela
+config.window_padding = { left = 0, right = 0, top = 0, bottom = 0 }
 
 -- Efeito de vidro (Windows 11): Acrylic = transparência com blur
--- Para só transparência sem blur use 'Disable'; 'Mica'/'Tabbed' são outras opções
 config.win32_system_backdrop = 'Acrylic'
 config.window_background_opacity = 0.62
 config.text_background_opacity = 1.0
@@ -289,23 +297,6 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
   return ' ' .. icon .. ' ' .. idx .. ' ' .. title .. ' '
 end)
 
--- Barra de status à direita: workspace + hora, com acento neon
-wezterm.on('update-right-status', function(window, pane)
-  local sc = scheme_def(window:effective_config().color_scheme) or {}
-  local accent = (sc.ansi and sc.ansi[7]) or '#05f2ff'
-  local hot = (sc.ansi and sc.ansi[2]) or '#ff2a6d'
-  local dim = (sc.ansi and sc.ansi[5]) or '#5a6199'
-  window:set_right_status(wezterm.format {
-    { Foreground = { Color = dim } },
-    { Text = '󰒋 ' .. window:active_workspace() .. '  ' },
-    { Foreground = { Color = hot } },
-    { Text = '│ ' },
-    { Foreground = { Color = accent } },
-    { Attribute = { Intensity = 'Bold' } },
-    { Text = '󰥔 ' .. wezterm.strftime('%H:%M') .. '  ' },
-  })
-end)
-
 -- Detalhes extras
 config.bold_brightens_ansi_colors = 'BrightAndBold'
 config.visual_bell = { fade_in_duration_ms = 60, fade_out_duration_ms = 140, target = 'CursorColor' }
@@ -327,7 +318,118 @@ config.command_palette_rows = 12
 config.char_select_bg_color = '#0d1117'
 config.char_select_fg_color = '#05f2ff'
 
-config.scrollback_lines = 10000
-config.audible_bell = 'Disabled'
+-- ───── Glitch animado ─────
+-- Rajadas curtas de interferência: barras neon/blocos de pixel sobre o fundo e,
+-- às vezes, o texto pisca em ciano/rosa. Ajuste a frequência aqui:
+local GLITCH = {
+  enabled = true,
+  gap_min = 3.0,   -- segundos mínimos entre rajadas
+  gap_max = 9.0,   -- segundos máximos entre rajadas
+  frames_min = 4,  -- quadros por rajada
+  frames_max = 8,
+  frame_ms_min = 55,
+  frame_ms_max = 130,
+  text_flicker = 0.30, -- chance de o texto piscar de cor num quadro
+  images = 8,
+}
+config.status_update_interval = 80
+
+local assets = wezterm.home_dir .. '/.wezterm_assets/'
+local glitch_state = {}
+local last_status = {}
+
+local function now()
+  local t = wezterm.time.now()
+  return tonumber(t:format('%s')) + (tonumber(t:format('%.3f')) or 0)
+end
+
+local function rand(a, b) return a + math.random() * (b - a) end
+
+local function scheme_bg(name)
+  local sc = (config.color_schemes[name] or wezterm.color.get_builtin_schemes()[name]) or {}
+  return sc.background or '#080b10'
+end
+
+local function glitch_frame(overrides)
+  local name = overrides.color_scheme or config.color_scheme
+  local layers = {
+    { source = { Color = scheme_bg(name) }, width = '100%', height = '100%', opacity = 1.0 },
+  }
+  for _ = 1, math.random(1, 2) do
+    layers[#layers + 1] = {
+      source = { File = assets .. 'glitch' .. math.random(1, GLITCH.images) .. '.png' },
+      width = '100%', height = '100%',
+      horizontal_offset = math.random(-24, 24),
+      opacity = rand(0.35, 0.9),
+    }
+  end
+  overrides.background = layers
+  if math.random() < GLITCH.text_flicker then
+    local fg = ({ '#05f2ff', '#ff2a6d', '#ffffff', '#3d8bff' })[math.random(1, 4)]
+    local c = {}
+    for k, v in pairs(config.colors) do c[k] = v end
+    c.foreground = fg
+    overrides.colors = c
+  else
+    overrides.colors = nil
+  end
+end
+
+local function tick_glitch(window)
+  if not GLITCH.enabled then return end
+  local id = window:window_id()
+  local st = glitch_state[id]
+  local t = now()
+  if not st then
+    st = { frames = 0, next = t + rand(GLITCH.gap_min, GLITCH.gap_max), until_ = 0 }
+    glitch_state[id] = st
+  end
+  if st.frames == 0 then
+    if t >= st.next and window:is_focused() then
+      st.frames = math.random(GLITCH.frames_min, GLITCH.frames_max)
+      st.until_ = 0
+    else
+      return
+    end
+  end
+  if t < st.until_ then return end
+
+  local overrides = window:get_config_overrides() or {}
+  st.frames = st.frames - 1
+  if st.frames <= 0 then
+    overrides.background = nil
+    overrides.colors = nil
+    st.frames = 0
+    st.next = t + rand(GLITCH.gap_min, GLITCH.gap_max)
+  else
+    glitch_frame(overrides)
+    st.until_ = t + rand(GLITCH.frame_ms_min, GLITCH.frame_ms_max) / 1000
+  end
+  window:set_config_overrides(overrides)
+end
+
+-- Barra de status à direita (workspace + hora) e motor do glitch
+wezterm.on('update-status', function(window, pane)
+  local id = window:window_id()
+  local sc = config.color_schemes[window:effective_config().color_scheme]
+    or wezterm.color.get_builtin_schemes()[window:effective_config().color_scheme] or {}
+  local accent = (sc.ansi and sc.ansi[7]) or '#05f2ff'
+  local hot = (sc.ansi and sc.ansi[2]) or '#ff2a6d'
+  local dim = (sc.ansi and sc.ansi[5]) or '#5a6199'
+  local text = wezterm.format {
+    { Foreground = { Color = dim } },
+    { Text = '󰒋 ' .. window:active_workspace() .. '  ' },
+    { Foreground = { Color = hot } },
+    { Text = '│ ' },
+    { Foreground = { Color = accent } },
+    { Attribute = { Intensity = 'Bold' } },
+    { Text = '󰥔 ' .. wezterm.strftime('%H:%M') .. '  ' },
+  }
+  if last_status[id] ~= text then
+    last_status[id] = text
+    window:set_right_status(text)
+  end
+  tick_glitch(window)
+end)
 
 return config
