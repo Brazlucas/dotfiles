@@ -11,6 +11,13 @@ stamp=$(date +%Y%m%d-%H%M%S)
 done
 cp -a home/. "$HOME/"
 
+# WezTerm (Windows): copia para o home do usuário Windows
+WINHOME=${WINHOME:-/mnt/c/Users/blubs}
+if [ -d windows ] && [ -d "$WINHOME" ]; then
+  [ -e "$WINHOME/.wezterm.lua" ] && cp -a "$WINHOME/.wezterm.lua" "$WINHOME/.wezterm.lua.bak-$stamp"
+  cp -a windows/. "$WINHOME/"
+fi
+
 # oh-my-zsh + plugins
 [ -d "$HOME/.oh-my-zsh" ] || sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 cp -a home/.zshrc "$HOME/.zshrc"

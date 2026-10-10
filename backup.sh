@@ -8,7 +8,7 @@ DIRS=(.tmuxp
   .config/nvim .config/nvim.astronvim
   .config/btop .config/htop .config/lazygit .config/lazydocker .config/gitui
   .config/git .config/neofetch .config/thefuck .config/tmux .config/yay
-  .config/psysh .config/systemd .config/facilita)
+  .config/psysh .config/systemd .config/facilita .config/cyber)
 # .config/pgcli: só o arquivo de config (history/log ficam de fora)
 EXTRA=(.config/pgcli/config)
 
@@ -19,6 +19,12 @@ done
 for d in "${DIRS[@]}"; do
   [ -d "$HOME/$d" ] && mkdir -p "home/$d" && cp -a "$HOME/$d/." "home/$d/"
 done
+# WezTerm roda no Windows: copia config e assets para windows/
+WINHOME=${WINHOME:-/mnt/c/Users/blubs}
+rm -rf windows && mkdir -p windows
+for f in .wezterm.lua; do [ -e "$WINHOME/$f" ] && cp -a "$WINHOME/$f" "windows/$f"; done
+[ -d "$WINHOME/.wezterm_assets" ] && cp -a "$WINHOME/.wezterm_assets" windows/.wezterm_assets
+
 # nunca versionar estes
 find home -name .git -prune -exec rm -rf {} + 2>/dev/null || true
 find home -name '*.log' -delete
