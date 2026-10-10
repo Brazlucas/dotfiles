@@ -36,7 +36,9 @@ def install(m, name, src):
     if colorize:
         m.write(cfg / "bat" / "themes" / "theme.tmTheme", (src / "bat.tmTheme").read_text(encoding="utf-8"))
         if shutil.which("bat"):
-            subprocess.run(["bat", "cache", "--build"], capture_output=True)
+            # em segundo plano: só afeta o próximo uso do bat e custava ~400 ms na troca de tema
+            subprocess.Popen(["bat", "cache", "--build"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                             stdin=subprocess.DEVNULL, start_new_session=True)
 
     # git: inclui o arquivo do delta (include de arquivo ausente é ignorado)
     gitconfig = m.HOME / ".gitconfig"

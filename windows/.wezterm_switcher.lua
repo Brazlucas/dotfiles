@@ -107,6 +107,7 @@ function M.setup(config, wezterm, opts)
   local function finish(window)
     S.active = false
     S.gen = S.gen + 1
+    window:set_left_status('')   -- a faixa só existe enquanto o seletor está ativo (segurando/apertando)
     pop_table(window)
   end
 

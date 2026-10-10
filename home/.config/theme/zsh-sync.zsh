@@ -58,11 +58,22 @@ _theme_check() {
 # a cada prompt novo
 _theme_precmd() { _theme_check }
 
-# com o shell parado no prompt: confere a cada 1s e redesenha na hora se o tema mudou
+# com o shell parado no prompt: confere a cada 1s (rede de segurança) e redesenha se o tema mudou
 TMOUT=1
 TRAPALRM() {
   _theme_check && [[ -o zle ]] && zle && zle reset-prompt
+  return 0
 }
+
+# aviso imediato: o `theme` manda SIGUSR1 aos shells registrados (só estes têm o trap; os antigos não são tocados)
+typeset -g _THEME_SHELL_REG=~/.config/theme/build/shells
+mkdir -p $_THEME_SHELL_REG 2>/dev/null && : > $_THEME_SHELL_REG/$$
+TRAPUSR1() {
+  _theme_check && [[ -o zle ]] && zle && zle reset-prompt
+  return 0
+}
+_theme_zshexit() { rm -f $_THEME_SHELL_REG/$$ 2>/dev/null }
 
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _theme_precmd
+add-zsh-hook zshexit _theme_zshexit

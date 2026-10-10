@@ -77,6 +77,8 @@ do
   check('toque: roda theme set b', e.cmds[1] == 'theme set b', e.cmds[1])
   check('toque: um comando só', #e.cmds == 1)
   check('toque: pop da tabela', e.popped == 1)
+  check('toque: faixa some ao soltar', e.window.left == '', tostring(e.window.left))
+  check('toque: prévia de cores segue até o reload', next(e.window.ov) ~= nil)
   -- reload do arquivo limpa a prévia
   e.handlers['window-config-reloaded'](e.proxy)
   check('reload limpa overrides', next(e.window.ov) == nil)

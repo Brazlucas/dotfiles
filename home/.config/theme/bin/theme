@@ -278,25 +278,53 @@ def sync_wezterm():
             f.unlink()
 
 
-def install(name):
-    """Torna o tema ativo: build/current -> build/<nome> e instala os arquivos que vivem fora."""
+def install_core(name):
+    """Parte rápida de tornar o tema ativo: build/current -> build/<nome> + arquivos que vivem fora.
+    O marcador .active é gravado por último: os shells só reagem depois que tudo está pronto."""
+    import time
     cur = BUILD / "current"
     if cur.is_symlink() or cur.exists():
         cur.unlink()
     cur.symlink_to(name)
-    # marcador (nome + hora) que os shells observam para recarregar cores/prompt
-    import time
-    (BUILD / ".active").write_text(f"{name} {time.time()}")
     src = BUILD / name
     write(HOME / ".oh-my-zsh" / "custom" / "themes" / "theme-active.zsh-theme",
           (src / "theme-active.zsh-theme").read_text(encoding="utf-8"))
     if WINHOME.exists():
         write(WEZ_THEME, (src / "wezterm.lua").read_text(encoding="utf-8"))
+    (BUILD / ".active").write_text(f"{name} {time.time()}")
+
+
+def install_extras(name):
+    """Parte lenta (btop, pgcli, bat, git, Claude Code): roda DEPOIS de tmux/zsh/WezTerm já terem trocado."""
     inst = ROOT / "bin" / "install_extra.py"
     if inst.exists():
         ns = {"__file__": str(inst)}
         exec(compile(inst.read_text(encoding="utf-8"), str(inst), "exec"), ns)
-        ns["install"](sys.modules[__name__], name, src)
+        ns["install"](sys.modules[__name__], name, BUILD / name)
+
+
+def install(name):
+    install_core(name)
+    install_extras(name)
+
+
+def signal_shells():
+    """Avisa na hora os zsh que se registraram (build/shells/<pid>) para recarregarem cores e prompt."""
+    import signal
+    reg = BUILD / "shells"
+    if not reg.is_dir():
+        return
+    for f in list(reg.iterdir()):
+        try:
+            pid = int(f.name)
+            if Path(f"/proc/{pid}/comm").read_text().strip() != "zsh":
+                raise ProcessLookupError
+            os.kill(pid, signal.SIGUSR1)
+        except (ValueError, OSError):
+            try:
+                f.unlink()
+            except OSError:
+                pass
 
 
 # ───────────────────────── estado e recarga ─────────────────────────
@@ -331,14 +359,17 @@ def reload_live():
 
 
 def activate(name):
+    """Ordem pensada para latência: o que o usuário vê primeiro (WezTerm, tmux, shells) vem antes do que é lento."""
     p = build(name)
-    install(name)
+    install_core(name)
     set_state(name)
     if name != CLASSIC:
         LAST.parent.mkdir(parents=True, exist_ok=True)
         LAST.write_text(name)
-    sync_wezterm()
     reload_live()
+    signal_shells()
+    install_extras(name)
+    sync_wezterm()
     print(f"{name}: {p.get('label', name)}")
 
 
