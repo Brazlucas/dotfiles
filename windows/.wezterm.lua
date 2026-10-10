@@ -236,10 +236,11 @@ end
 -- ───── Visual cyberpunk ─────
 -- padding 0: o tmux encosta nas bordas da janela
 config.window_padding = { left = 0, right = 0, top = 0, bottom = 0 }
+config.use_resize_increments = true
 
 -- Efeito de vidro (Windows 11): Acrylic = transparência com blur
 config.win32_system_backdrop = 'Acrylic'
-config.window_background_opacity = 0.62
+config.window_background_opacity = 0.80
 config.text_background_opacity = 1.0
 
 -- Painéis inativos levemente escurecidos
@@ -323,16 +324,16 @@ config.char_select_fg_color = '#05f2ff'
 -- às vezes, o texto pisca em ciano/rosa. Ajuste a frequência aqui:
 local GLITCH = {
   enabled = true,
-  gap_min = 3.0,   -- segundos mínimos entre rajadas
-  gap_max = 9.0,   -- segundos máximos entre rajadas
-  frames_min = 4,  -- quadros por rajada
-  frames_max = 8,
+  gap_min = 2.0,   -- segundos mínimos entre rajadas
+  gap_max = 6.0,   -- segundos máximos entre rajadas
+  frames_min = 5,  -- quadros por rajada
+  frames_max = 10,
   frame_ms_min = 55,
   frame_ms_max = 130,
-  text_flicker = 0.30, -- chance de o texto piscar de cor num quadro
+  text_flicker = 0.45, -- chance de o texto piscar de cor num quadro
   images = 8,
 }
-config.status_update_interval = 80
+config.status_update_interval = 50
 
 local assets = wezterm.home_dir .. '/.wezterm_assets/'
 local glitch_state = {}
@@ -350,18 +351,59 @@ local function scheme_bg(name)
   return sc.background or '#080b10'
 end
 
+local NEON = { '5,242,255', '255,42,109', '61,139,255', '255,255,255', '180,92,255', '0,255,163' }
+
+-- faixas horizontais (ou verticais) aleatórias: lista de cores transparentes/neon
+local function band_colors(n, density, amin, amax)
+  local cols = {}
+  local i = 1
+  while i <= n do
+    local run = math.random(1, 3)
+    local c
+    if math.random() < density then
+      c = string.format('rgba(%s,%.2f)', NEON[math.random(1, #NEON)], rand(amin, amax))
+    else
+      c = 'rgba(0,0,0,0)'
+    end
+    for _ = 1, run do
+      cols[#cols + 1] = c
+      cols[#cols + 1] = c -- duplica para deixar a borda da faixa mais dura
+      i = i + 1
+    end
+  end
+  return cols
+end
+
 local function glitch_frame(overrides)
   local name = overrides.color_scheme or config.color_scheme
   local layers = {
     { source = { Color = scheme_bg(name) }, width = '100%', height = '100%', opacity = 1.0 },
-  }
-  for _ = 1, math.random(1, 2) do
-    layers[#layers + 1] = {
-      source = { File = assets .. 'glitch' .. math.random(1, GLITCH.images) .. '.png' },
+    { -- faixas horizontais de interferência
+      source = { Gradient = {
+        colors = band_colors(math.random(28, 56), 0.35, 0.45, 0.95),
+        orientation = 'Vertical',
+        blend = 'Rgb',
+        noise = 48,
+      } },
       width = '100%', height = '100%',
-      horizontal_offset = math.random(-24, 24),
-      opacity = rand(0.35, 0.9),
+      horizontal_offset = math.random(-30, 30),
+      opacity = 1.0,
+    },
+  }
+  if math.random() < 0.6 then
+    layers[#layers + 1] = { -- riscos verticais finos
+      source = { Gradient = {
+        colors = band_colors(math.random(60, 120), 0.12, 0.25, 0.7),
+        orientation = 'Horizontal',
+        blend = 'Rgb',
+      } },
+      width = '100%', height = '100%',
+      opacity = 0.9,
     }
+  end
+  if math.random() < 0.5 then
+    local tint = ({ 'rgba(5,242,255,0.16)', 'rgba(255,42,109,0.16)', 'rgba(255,255,255,0.10)' })[math.random(1, 3)]
+    layers[#layers + 1] = { source = { Color = tint }, width = '100%', height = '100%', opacity = 1.0 }
   end
   overrides.background = layers
   if math.random() < GLITCH.text_flicker then
