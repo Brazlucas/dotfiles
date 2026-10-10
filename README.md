@@ -16,7 +16,7 @@ Um tema é **só um arquivo de paleta** (`home/.config/theme/palettes/<nome>.tom
 | tmux | barra, bordas, mensagens, popup do gato |
 | nvim | colorscheme `theme` (transparente, derivado da paleta) |
 | zsh | prompt de duas linhas, `LS_COLORS`/`eza`, `fzf`, cores do autosuggestions e syntax-highlighting |
-| Claude Code | `~/.claude/themes/<tema>.json` + `theme` no `settings.json` |
+| Claude Code | usa `dark-ansi` (herda a paleta ANSI do WezTerm: acompanha o tema ao vivo e na prévia do seletor) |
 | bat · delta · lazygit · btop · ripgrep · pgcli | tema/estilo equivalente |
 
 **Temas (16 + o original):** `cyberpunk` (padrão), `tokyo-night`, `catppuccin-mocha`, `dracula`, `gruvbox-dark`, `nord`, `one-dark`, `rose-pine`, `kanagawa`, `everforest`, `solarized-dark`, `synthwave-84`, `matrix`, `ayu-mirage` e os originais `acid-jungle` (lima/amarelo/ciano) e `blade-runner` (laranja-néon/ciano). `classic` é o visual de antes de tudo isso e fica fora do ciclo `next/prev`.

@@ -59,6 +59,6 @@ tmux        = "neon"          # neon | classic
 neko        = true
 zsh_theme   = "theme-active"  # gerado a partir da paleta; "suvash" = original
 nvim        = "generated"     # generated | <nome de colorscheme nativo>
-claude      = "custom"        # custom (gera ~/.claude/themes/<nome>.json) | dark-ansi (herda o terminal)
+claude      = "dark-ansi"     # herda a paleta ANSI do terminal: acompanha o WezTerm ao vivo (custom = cores RGB fixas, só relidas ao reiniciar o Claude)
 colorize    = true          # LS_COLORS/eza, fzf, bat, delta, lazygit, btop, ripgrep, zsh plugins
 pgcli_style = "monokai"

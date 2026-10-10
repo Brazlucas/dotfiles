@@ -422,7 +422,14 @@ def apply_claude(name, delay=0.0):
     text = settings.read_text(encoding="utf-8")
     new, n = re.subn(r'^(\s*)"theme"\s*:\s*"[^"]*"', r'\1"theme": "%s"' % want, text, count=1, flags=re.M)
     if n and new != text:
-        _atomic_write(settings, new)
+        # NO MESMO arquivo (mesmo inode): o Claude Code observa o settings.json, e um rename/atomic-replace
+        # faz o observador perder o arquivo e parar de ver mudanças de tema. Sobrescreve e só depois trunca,
+        # então nunca existe um instante com o arquivo vazio.
+        data = new.encode("utf-8")
+        with open(settings, "r+b") as fh:
+            fh.seek(0)
+            fh.write(data)
+            fh.truncate()
 
 
 def _atomic_write_new(path, text):
