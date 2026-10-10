@@ -47,14 +47,11 @@ def install(m, name, src):
     if "build/current/delta.gitconfig" not in text:
         gitconfig.write_text(text.rstrip("\n") + "\n" + inc, encoding="utf-8")
 
-    # Claude Code: tema customizado (~/.claude/themes/<nome>.json) + "theme" no settings.json
+    # Claude Code: aplicado DEPOIS, em segundo plano e de forma atômica (theme _claude).
+    # O Claude redesenha a tela inteira ao ver o tema mudar; se isso coincidir com o reload do WezTerm
+    # e do tmux, as atualizações se sobrepõem e o texto do chat sai torto.
     settings = m.HOME / ".claude" / "settings.json"
     if settings.exists():
-        want = f"custom:{name}" if f.get("claude") == "custom" else (f.get("claude") or "dark-ansi")
-        if f.get("claude") == "custom":
-            m.write(m.HOME / ".claude" / "themes" / f"{name}.json",
-                    (src / "claude-theme.json").read_text(encoding="utf-8"))
-        bak = settings.with_name("settings.json.bak-theme")
-        if not bak.exists():
-            bak.write_bytes(settings.read_bytes())
-        _sub_line(settings, r'^(\s*)"theme"\s*:\s*"[^"]*"', r'\1"theme": "%s"' % want)
+        subprocess.Popen([str(m.ROOT / "bin" / "theme"), "_claude", name, "0.9"],
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL,
+                         start_new_session=True)

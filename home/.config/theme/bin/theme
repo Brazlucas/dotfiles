@@ -385,6 +385,50 @@ def preview(name):
     signal_shells()
 
 
+def _atomic_write(path, text):
+    """grava via arquivo temporário + rename, para quem observa o arquivo nunca ver um estado pela metade."""
+    path = Path(path)
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    try:
+        os.chmod(tmp, path.stat().st_mode & 0o777)
+    except OSError:
+        pass
+    os.replace(tmp, path)
+
+
+def apply_claude(name, delay=0.0):
+    """Tema do Claude Code (~/.claude/themes/<nome>.json + "theme" no settings.json), com atraso e atomicidade.
+    Se o tema mudou de novo durante a espera, este pedido é descartado (o mais novo vale)."""
+    import time
+    if delay:
+        time.sleep(delay)
+    if current() != name:
+        return
+    settings = HOME / ".claude" / "settings.json"
+    if not settings.exists():
+        return
+    f = load(name)["features"]
+    want = f"custom:{name}" if f.get("claude") == "custom" else (f.get("claude") or "dark-ansi")
+    if f.get("claude") == "custom":
+        _atomic_write_new(HOME / ".claude" / "themes" / f"{name}.json",
+                          (BUILD / name / "claude-theme.json").read_text(encoding="utf-8"))
+    bak = settings.with_name("settings.json.bak-theme")
+    if not bak.exists():
+        bak.write_bytes(settings.read_bytes())
+    text = settings.read_text(encoding="utf-8")
+    new, n = re.subn(r'^(\s*)"theme"\s*:\s*"[^"]*"', r'\1"theme": "%s"' % want, text, count=1, flags=re.M)
+    if n and new != text:
+        _atomic_write(settings, new)
+
+
+def _atomic_write_new(path, text):
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    tmp = Path(path).with_name(Path(path).name + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    os.replace(tmp, path)
+
+
 def last_theme():
     if LAST.exists() and LAST.read_text().strip() in palettes():
         return LAST.read_text().strip()
@@ -436,6 +480,8 @@ def main(argv):
         else:
             i = names.index(current())
             activate(names[(i + (1 if cmd == "next" else -1)) % len(names)])
+    elif cmd == "_claude":  # interno: aplicado em segundo plano por install_extras
+        apply_claude(argv[2], float(argv[3]) if len(argv) > 3 else 0.0)
     elif cmd == "sync":
         sync_wezterm()
         print(f"exportado para o WezTerm: {WEZ_THEMES}")
