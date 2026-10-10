@@ -6,7 +6,7 @@ Uso:
   theme current           mostra o tema ativo
   theme set <nome>        ativa um tema (gera tudo e recarrega o que der)
   theme toggle            alterna entre o último tema e o clássico (visual original)
-  theme next | prev       cicla entre os temas
+  theme next | prev       cicla entre os temas (sem o clássico)
   theme build [nome]      só gera os arquivos (não muda o estado)
   theme export nvim [n]   exporta o colorscheme do nvim como pacote independente
 
@@ -346,9 +346,13 @@ def main(argv):
         cur = current()
         activate(last_theme() if cur == CLASSIC else CLASSIC)
     elif cmd in ("next", "prev"):
-        names = [n for n in palettes() if n != CLASSIC] + [CLASSIC]
-        i = names.index(current()) if current() in names else 0
-        activate(names[(i + (1 if cmd == "next" else -1)) % len(names)])
+        # o clássico (visual original) fica fora do ciclo: só via `theme toggle` / `theme set classic`
+        names = [n for n in palettes() if n != CLASSIC]
+        if current() not in names:  # estando no clássico, o ciclo recomeça do último tema usado
+            activate(last_theme())
+        else:
+            i = names.index(current())
+            activate(names[(i + (1 if cmd == "next" else -1)) % len(names)])
     elif cmd == "build":
         for n in (argv[2:] or [current()]):
             build(n)
