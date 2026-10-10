@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-FILES=(.zshrc .tmux.conf .nanorc .tool-versions .gitconfig tmuxpconf.yaml)
+FILES=(.zshrc .oh-my-zsh/custom/themes/cyberpunk.zsh-theme .tmux.conf .nanorc .tool-versions .gitconfig tmuxpconf.yaml)
 DIRS=(.tmuxp
   .config/nvim .config/nvim.astronvim
   .config/btop .config/htop .config/lazygit .config/lazydocker .config/gitui

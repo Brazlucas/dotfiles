@@ -10,6 +10,7 @@ Segredos (tokens do ngrok, `.git-credentials`, `.ssh`, `.aws`, `.npmrc`, histór
 ## Visual cyberpunk
 - **WezTerm** (`windows/.wezterm.lua`): tema Cyberpunk, vidro em camadas (Acrylic + gradiente + reflexo + scanlines), abas largas com ícone e X, status à direita. `Ctrl+Alt+T` cicla os temas.
 - **tmux** (`home/.config/tmux/tmux.conf`): barra superior neon, bordas rosa, popup com gato ASCII ao anexar.
+- **zsh** (`home/.oh-my-zsh/custom/themes/cyberpunk.zsh-theme`): prompt em duas linhas neon com git, exit code e hora; desligado volta ao `suvash`.
 - **Gato ASCII** (`home/.config/cyber/`): `NEKO_OFF=1` desliga; qualquer tecla pula a animação.
 
 ## Toggle do tema cyberpunk

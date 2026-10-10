@@ -20,7 +20,12 @@ plugins=(
 export GOPATH=$HOME/go
 export DISABLE_AUTO_TITLE='true'
 
-ZSH_THEME="suvash"
+# Tema do prompt segue o toggle cyberpunk (~/.cyber_state do Windows): on = cyberpunk, off = suvash
+if [[ "$(cat /mnt/c/Users/blubs/.cyber_state 2>/dev/null)" == off ]]; then
+  ZSH_THEME="suvash"
+else
+  ZSH_THEME="cyberpunk"
+fi
 
 source $ZSH/oh-my-zsh.sh
  
