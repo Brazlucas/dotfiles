@@ -1,0 +1,35 @@
+session_name: '0'
+windows:
+- layout: bf1d,205x54,0,0,0
+  options: {}
+  panes:
+  - focus: 'true'
+    shell_command: claude
+  start_directory: /home/luqueta/repo/infocar-backend
+  window_name: claude
+- focus: 'true'
+  layout: 227c,205x54,0,0[205x20,0,0,6,205x10,0,21,7,205x12,0,32{102x12,0,32,8,102x12,103,32,9},205x9,0,45,2]
+  options: {}
+  panes:
+  - shell_command:
+    - cd /home/luqueta/repo/infocar-frontend
+    - nano
+  - shell_command:
+    - cd /home/luqueta/repo/infocar-backend
+    - zsh
+  - shell_command:
+    - cd /home/luqueta/repo/hubytech-report
+    - zsh
+  - focus: 'true'
+    shell_command: cd /home/luqueta/repo/hubytech-report/workspaces/infocar-report
+  - shell_command:
+    - cd /home/luqueta/repo/infocar-frontend
+    - npm
+  window_name: zsh
+- layout: 5fc2,205x54,0,0,13
+  options: {}
+  panes:
+  - focus: 'true'
+    shell_command: zsh
+  start_directory: /mnt/c/Users/blubs
+  window_name: zsh

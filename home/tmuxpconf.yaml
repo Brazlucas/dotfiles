@@ -1,0 +1,36 @@
+session_name: workspace
+windows:
+- layout: c79e,225x56,0,0,1
+  options:
+    automatic-rename: false
+  panes:
+  - focus: 'true'
+    shell_command: claude
+  start_directory: /home/luqueta/repo/work/infocar-backend
+  window_name: claude
+- focus: 'true'
+  layout: f29e,225x56,0,0[225x34,0,0{112x34,0,0[112x16,0,0,2,112x17,0,17,3],112x34,113,0[112x16,113,0,4,112x17,113,17,5]},225x21,0,35,6]
+  options:
+    automatic-rename: false
+  panes:
+  - shell_command:
+    - cd /home/luqueta/repo/work/infocar-backend
+    - make
+  - shell_command:
+    - cd /home/luqueta/repo/work/infocar-frontend
+    - nvim
+  - shell_command:
+    - cd /home/luqueta/repo/work/infocar-backend
+    - make
+  - focus: 'true'
+    shell_command: cd /home/luqueta/repo/work/infocar-frontend
+  - cd /home/luqueta/repo/work/infocar-backend
+  window_name: zsh
+- layout: c7a5,225x56,0,0,8
+  options:
+    automatic-rename: false
+  panes:
+  - focus: 'true'
+    shell_command: nvim
+  start_directory: /home/luqueta/repo/work
+  window_name: nvim

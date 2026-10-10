@@ -1,0 +1,10 @@
+*.log
+history
+*_history
+.git-credentials
+.ssh/
+.aws/
+.azure/
+.npmrc
+.config/ngrok/
+.env
