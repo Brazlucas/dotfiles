@@ -6,6 +6,8 @@ local function check(name, cond, extra)
   if not cond then fails = fails + 1; print('FALHOU: ' .. name .. (extra and (' — ' .. tostring(extra)) or '')) end
 end
 
+local function sets(e) local r = {} for _, c in ipairs(e.cmds) do if c:find(' set ', 1, true) then r[#r + 1] = c end end return r end
+
 local function new_env(current, mode)
   local env = { t = 100.0, q = {}, cmds = {}, handlers = {}, popped = 0, activated = 0 }
   local function mk(n, a1, a2) return { name = n, label = n:upper(), accent1 = a1, accent2 = a2, bg = '#000', fg = '#fff' } end
@@ -25,7 +27,7 @@ local function new_env(current, mode)
   env.window = {
     ov = {}, left = '', mods = 'CTRL|ALT', focused = true,
     get_config_overrides = function(w) return w.ov end,
-    set_config_overrides = function(w, o) w.ov = o end,
+    set_config_overrides = function(w, o) w.ov = o; w.ov_sets = (w.ov_sets or 0) + 1 end,
     set_left_status = function(w, s) w.left = s end,
     keyboard_modifiers = function(w) return w.mods, 'NONE' end,
     is_focused = function(w) return w.focused end,
@@ -74,8 +76,8 @@ do
   local e = new_env('a')
   e.step(1); check('toque: prévia mostra b', e.window.ov.color_scheme == 'b', e.window.ov.color_scheme)
   e.window.mods = 'NONE'; e.advance(0.5)
-  check('toque: roda theme set b', e.cmds[1] == 'theme set b', e.cmds[1])
-  check('toque: um comando só', #e.cmds == 1)
+  check('toque: roda theme set b', sets(e)[1] == 'theme set b', sets(e)[1])
+  check('toque: um set só', #sets(e) == 1)
   check('toque: pop da tabela', e.popped == 1)
   check('toque: faixa some ao soltar', e.window.left == '', tostring(e.window.left))
   check('toque: prévia de cores segue até o reload', next(e.window.ov) ~= nil)
@@ -89,18 +91,18 @@ do
   local e = new_env('a')
   e.step(1); e.advance(0.3); e.step(1); e.advance(0.3); e.step(1)
   check('3 passos -> d', e.window.ov.color_scheme == 'd', e.window.ov.color_scheme)
-  e.advance(1.0); check('enquanto segura não aplica', #e.cmds == 0)
+  e.advance(1.0); check('enquanto segura não aplica (nenhum set)', #sets(e) == 0)
   e.window.mods = 'NONE'; e.advance(0.5)
-  check('ao soltar aplica d', e.cmds[1] == 'theme set d', e.cmds[1])
+  check('ao soltar aplica d', sets(e)[1] == 'theme set d', sets(e)[1])
 end
 
 -- 3) auto-repeat (segurar o T, 30 Hz por 1s) é limitado
 do
   local e = new_env('a')
   for i = 0, 30 do e.step(1); e.advance(1 / 30) end
-  local idx = e.eng.state.idx
-  check('auto-repeat limitado (<= 6 passos)', idx <= 7, idx)  -- começa em 1(a); 1+<=6
-  check('auto-repeat avançou algo', idx > 2, idx)
+  local n = e.window.ov_sets or 0
+  check('auto-repeat limitado (<= 5 passos em 1 s)', n <= 5, n)
+  check('auto-repeat avançou mais de 1 passo', n >= 3, n)
 end
 
 -- 4) Esc cancela
@@ -108,7 +110,7 @@ do
   local e = new_env('a')
   e.step(1); e.step(1)
   e.eng.cancel(e.proxy)
-  check('Esc: sem comando', #e.cmds == 0)
+  check('Esc: sem set', #sets(e) == 0)
   check('Esc: overrides limpos', next(e.window.ov) == nil)
   check('Esc: faixa limpa', e.window.left == '')
   e.advance(1); check('Esc: laço parou', #e.q == 0 or true)
@@ -118,7 +120,7 @@ end
 do
   local e = new_env('a')
   e.step(1); e.window.focused = false; e.advance(0.3)
-  check('foco perdido: sem comando', #e.cmds == 0)
+  check('foco perdido: sem set', #sets(e) == 0)
   check('foco perdido: overrides limpos', next(e.window.ov) == nil)
 end
 
@@ -133,7 +135,7 @@ do
   local e = new_env('b')
   e.step(1); e.advance(0.3); e.step(-1)
   e.window.mods = 'NONE'; e.advance(0.5)
-  check('voltou ao original: sem comando', #e.cmds == 0, e.cmds[1])
+  check('voltou ao original: nenhum set', #sets(e) == 0, sets(e)[1])
   check('voltou ao original: overrides limpos', next(e.window.ov) == nil)
 end
 
@@ -144,14 +146,14 @@ do
   local e2 = new_env('classic'); e2.step(-1)
   check('classic Shift -> último usado', e2.window.ov.color_scheme == 'c', e2.window.ov.color_scheme)
   e.window.mods = 'NONE'; e.advance(0.5)
-  check('classic confirma c', e.cmds[1] == 'theme set c', e.cmds[1])
+  check('classic confirma c', sets(e)[1] == 'theme set c', sets(e)[1])
 end
 
 -- 9) modo timeout: confirma sem precisar soltar
 do
   local e = new_env('a', 'timeout')
-  e.step(1); e.advance(0.5); check('timeout: ainda não', #e.cmds == 0)
-  e.advance(0.5); check('timeout: confirma', e.cmds[1] == 'theme set b', e.cmds[1])
+  e.step(1); e.advance(0.5); check('timeout: ainda não (nenhum set)', #sets(e) == 0)
+  e.advance(0.5); check('timeout: confirma', sets(e)[1] == 'theme set b', sets(e)[1])
 end
 
 -- 10) segurança: sem reload, a prévia é limpa em 3 s
@@ -169,6 +171,52 @@ do
   for _, it in ipairs(e.window.left) do if it.Text then txt[#txt + 1] = it.Text end end
   local s = table.concat(txt)
   check('faixa tem o rótulo B e 2/4', s:find('B') and s:find('2/4'), s)
+end
+
+
+-- 12) prévia sincroniza tmux/shells durante a seleção e confirma no fim
+do
+  local e = new_env('a')
+  e.step(1); e.advance(0.3)         -- b
+  e.step(1); e.advance(0.3)         -- c
+  local previews = {}
+  for _, c in ipairs(e.cmds) do if c:find('preview') then previews[#previews + 1] = c end end
+  check('prévia: chamou preview b e c', previews[1] == 'theme preview b' and previews[2] == 'theme preview c', table.concat(previews, ','))
+  e.window.mods = 'NONE'; e.advance(0.5)
+  check('prévia: confirma com set c', e.cmds[#e.cmds] == 'theme set c', e.cmds[#e.cmds])
+end
+
+-- 13) cancelar restaura tmux/shells ao original
+do
+  local e = new_env('a')
+  e.step(1); e.advance(0.3)
+  e.eng.cancel(e.proxy)
+  check('cancelar: restaura original (preview a)', e.cmds[#e.cmds] == 'theme preview a', e.cmds[#e.cmds])
+end
+
+-- 14) cancelar de classic restaura classic
+do
+  local e = new_env('classic')
+  e.step(1); e.advance(0.3); e.eng.cancel(e.proxy)
+  check('cancelar do classic: preview classic', e.cmds[#e.cmds] == 'theme preview classic', e.cmds[#e.cmds])
+end
+
+-- 15) voltar ao tema original antes de soltar restaura (preview a), sem set
+do
+  local e = new_env('a')
+  e.step(1); e.advance(0.3); e.step(-1); e.advance(0.3)
+  e.window.mods = 'NONE'; e.advance(0.5)
+  local sets = 0
+  for _, c in ipairs(e.cmds) do if c:find(' set ') then sets = sets + 1 end end
+  check('voltou ao original: nenhum set', sets == 0)
+  check('voltou ao original: última chamada deixa o tema a', e.cmds[#e.cmds] == 'theme preview a', e.cmds[#e.cmds])
+end
+
+-- 16) sem passos efetivos (toque rápido, solta antes do 1º preview): só o set
+do
+  local e = new_env('a')
+  e.step(1); e.window.mods = 'NONE'; e.advance(0.5)
+  check('toque rápido: termina em set b', e.cmds[#e.cmds] == 'theme set b', e.cmds[#e.cmds])
 end
 
 print(string.format('%d/%d verificações OK', total - fails, total))

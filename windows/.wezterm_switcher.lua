@@ -11,7 +11,9 @@ local DEFAULTS = {
   confirm_mode = 'release',   -- 'release' (soltar Ctrl/Alt) | 'timeout' (confirma após TIMEOUT s sem toque)
   poll_interval = 0.04,       -- s entre leituras de keyboard_modifiers
   release_grace = 0.15,       -- s após o último toque em que o "soltar" é ignorado
-  step_min_interval = 0.18,   -- s mínimos entre passos (limita o auto-repeat de segurar o T)
+  step_min_interval = 0.25,   -- s mínimos entre passos (limita o auto-repeat de segurar o T)
+  sync_others = true,         -- durante a prévia, também troca tmux e shells (theme preview) além do WezTerm
+  preview_interval = 0.22,    -- s mínimos entre chamadas `theme preview` (evita atropelar processos)
   timeout = 0.8,              -- só para confirm_mode = 'timeout'
   safety_clear = 3.0,         -- s para limpar a prévia caso o reload do tema não chegue
   debug = false,              -- loga eventos no log do WezTerm
@@ -60,7 +62,34 @@ function M.setup(config, wezterm, opts)
     return cache[name] or nil
   end
 
-  local S = { active = false, gen = 0, idx = 0, base = nil, last_event = 0, last_step = 0, pending = nil, pane = nil }
+  local S = { active = false, gen = 0, idx = 0, base = nil, last_event = 0, last_step = 0, pending = nil, pane = nil,
+              want = nil, sent = nil, preview_t = 0 }
+
+  -- roda `theme <args>` no WSL em segundo plano
+  local function run_theme(...)
+    local cmd = {}
+    for _, a in ipairs(theme_cmd) do cmd[#cmd + 1] = a end
+    for _, a in ipairs({ ... }) do cmd[#cmd + 1] = a end
+    wezterm.background_child_process(cmd)
+  end
+
+  -- tmux/shells acompanham a prévia (no máximo 1 chamada a cada preview_interval)
+  local function dispatch_preview(now)
+    if not C.sync_others or not S.want or S.want == S.sent then return end
+    if now - S.preview_t < C.preview_interval then return end
+    dbg('preview ' .. S.want)
+    run_theme('preview', S.want)
+    S.sent = S.want
+    S.preview_t = now
+  end
+
+  -- devolve tmux/shells ao tema original quando a prévia é descartada
+  local function restore_others()
+    if C.sync_others and S.sent and S.sent ~= S.base then
+      run_theme('preview', S.base or 'classic')
+    end
+    S.want, S.sent = nil, nil
+  end
 
   local function banner(window)
     local n = #names
@@ -115,6 +144,7 @@ function M.setup(config, wezterm, opts)
     if not S.active then return end
     dbg('cancelar')
     finish(window)
+    restore_others()
     clear_overrides(window)
   end
 
@@ -124,15 +154,13 @@ function M.setup(config, wezterm, opts)
     dbg('confirmar ' .. entry.name)
     finish(window)
     if entry.name == S.base then
+      restore_others()
       clear_overrides(window)
       return
     end
     -- mantém a prévia até o reload do arquivo de tema; timeout de segurança limpa
-    local cmd = {}
-    for _, a in ipairs(theme_cmd) do cmd[#cmd + 1] = a end
-    cmd[#cmd + 1] = 'set'
-    cmd[#cmd + 1] = entry.name
-    wezterm.background_child_process(cmd)
+    run_theme('set', entry.name)
+    S.want, S.sent = nil, nil
     S.pending = S.gen
     local token = S.pending
     schedule(C.safety_clear, function()
@@ -165,6 +193,7 @@ function M.setup(config, wezterm, opts)
         end
       end
     end
+    dispatch_preview(now)
     schedule(C.poll_interval, function() poll(window, gen) end)
   end
 
@@ -183,6 +212,7 @@ function M.setup(config, wezterm, opts)
       end
       S.idx = start
       S.last_step = 0
+      S.want, S.sent, S.preview_t = nil, nil, 0
       pcall(function() window:perform_action(act.ActivateKeyTable { name = 'theme_switch', one_shot = false, replace_current = true }, pane) end)
       schedule(C.poll_interval, function() poll(window, S.gen) end)
     end
@@ -192,6 +222,7 @@ function M.setup(config, wezterm, opts)
     S.idx = ((S.idx - 1 + dir_) % #names) + 1
     dbg('passo ' .. dir_ .. ' -> ' .. names[S.idx].name)
     apply_preview(window, names[S.idx])
+    S.want = names[S.idx].name
     banner(window)
   end
 

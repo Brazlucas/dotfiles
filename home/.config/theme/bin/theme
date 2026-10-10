@@ -8,6 +8,7 @@ Uso:
   theme toggle            alterna entre o último tema e o clássico (visual original)
   theme next | prev       cicla entre os temas (sem o clássico)
   theme build [nome]      só gera os arquivos (não muda o estado)
+  theme preview <nome>    prévia leve (tmux + shells) sem mudar o estado; usada pelo seletor
   theme sync              exporta os temas para o seletor do WezTerm (Ctrl+Alt+T)
   theme export nvim [n]   exporta o colorscheme do nvim como pacote independente
 
@@ -278,7 +279,7 @@ def sync_wezterm():
             f.unlink()
 
 
-def install_core(name):
+def install_core(name, wezterm=True):
     """Parte rápida de tornar o tema ativo: build/current -> build/<nome> + arquivos que vivem fora.
     O marcador .active é gravado por último: os shells só reagem depois que tudo está pronto."""
     import time
@@ -289,7 +290,7 @@ def install_core(name):
     src = BUILD / name
     write(HOME / ".oh-my-zsh" / "custom" / "themes" / "theme-active.zsh-theme",
           (src / "theme-active.zsh-theme").read_text(encoding="utf-8"))
-    if WINHOME.exists():
+    if wezterm and WINHOME.exists():
         write(WEZ_THEME, (src / "wezterm.lua").read_text(encoding="utf-8"))
     (BUILD / ".active").write_text(f"{name} {time.time()}")
 
@@ -350,10 +351,11 @@ def reload_live():
     if os.environ.get("THEME_NO_RELOAD"):
         return
     env = {k: v for k, v in os.environ.items() if k != "TMUX"}
+    tm = ["tmux"] + (["-L", os.environ["THEME_TMUX_SOCKET"]] if os.environ.get("THEME_TMUX_SOCKET") else [])
     try:
-        if subprocess.run(["tmux", "has-session"], env=env, capture_output=True).returncode == 0:
-            subprocess.run(["tmux", "source-file", str(TMUX_CONF)], env=env, capture_output=True)
-            subprocess.run(["tmux", "refresh-client", "-S"], env=env, capture_output=True)
+        if subprocess.run(tm + ["has-session"], env=env, capture_output=True).returncode == 0:
+            subprocess.run(tm + ["source-file", str(TMUX_CONF)], env=env, capture_output=True)
+            subprocess.run(tm + ["refresh-client", "-S"], env=env, capture_output=True)
     except FileNotFoundError:
         pass
 
@@ -371,6 +373,16 @@ def activate(name):
     install_extras(name)
     sync_wezterm()
     print(f"{name}: {p.get('label', name)}")
+
+
+def preview(name):
+    """Prévia leve (usada pelo seletor Ctrl+Alt+T): só o que se vê — barra do tmux e prompt/cores dos shells.
+    Não muda o estado, não reescreve o tema do WezTerm (a prévia dele é feita no próprio WezTerm) e pula os extras lentos.
+    O seletor termina sempre com `theme set` (confirmar) ou `theme preview <tema original>` (cancelar)."""
+    build(name)
+    install_core(name, wezterm=False)
+    reload_live()
+    signal_shells()
 
 
 def last_theme():
@@ -409,6 +421,10 @@ def main(argv):
         if len(argv) < 3:
             sys.exit("uso: theme set <nome>")
         activate(argv[2])
+    elif cmd == "preview":
+        if len(argv) < 3:
+            sys.exit("uso: theme preview <nome>")
+        preview(argv[2])
     elif cmd == "toggle":
         cur = current()
         activate(last_theme() if cur == CLASSIC else CLASSIC)
