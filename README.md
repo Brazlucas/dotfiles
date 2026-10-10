@@ -28,7 +28,10 @@ theme toggle            # ativa/desativa (último tema <-> classic)
 theme next | prev       # cicla
 theme export nvim <t>   # colorscheme do nvim autocontido (pasta themes/<t>.nvim)
 ```
-**Atalhos:** WezTerm `Ctrl+Alt+G` (liga/desliga) · `Ctrl+Alt+T` / `Ctrl+Alt+Shift+T` (próximo/anterior) · tmux `prefixo + T` · nvim `<leader>uz`.
+**Atalhos:** WezTerm `Ctrl+Alt+G` (liga/desliga) · tmux `prefixo + T` · nvim `<leader>uz`.
+
+**Seletor estilo Alt+Tab (`Ctrl+Alt+T` / `Ctrl+Alt+Shift+T`):** um toque cicla para o próximo tema; segurando `Ctrl+Alt` e batendo `T` você avança vendo a **prévia ao vivo** (o WezTerm se recolore e uma faixa mostra anterior · atual · seguinte) e ao **soltar** o tema é aplicado em tudo. `Esc` cancela, `Enter` confirma, setas navegam. Segurar só o `T` avança em ritmo controlado.
+Ajustes em `windows/.wezterm_switcher.lua` (`confirm_mode = 'release'|'timeout'`, `step_min_interval`, `debug`). Os dados vêm de `theme sync` (`C:\Users\<user>\.wezterm_themes\`). Testes do motor: `nvim -l home/.config/theme/tests/switcher_test.lua`.
 
 ### Criar um tema novo
 1. Copie uma paleta: `cp home/.config/theme/palettes/dracula.toml home/.config/theme/palettes/meu-tema.toml`

@@ -7,7 +7,7 @@ config.default_prog = { 'wsl.exe', '--cd', '~' }
 -- ───── Tema ─────
 -- Tudo (cores, vidro, abas, fonte…) vem do sistema de temas global: `theme set <nome>` no WSL
 -- gera C:\Users\<user>\.wezterm_theme.lua a partir de ~/.config/theme/palettes/<nome>.toml.
--- Atalhos: Ctrl+Alt+G liga/desliga (cyberpunk ↔ clássico), Ctrl+Alt+T / Ctrl+Alt+Shift+T trocam de tema.
+-- Atalhos: Ctrl+Alt+G liga/desliga (cyberpunk ↔ clássico); Ctrl+Alt+T / Ctrl+Alt+Shift+T = seletor Alt+Tab de temas.
 local theme_file = wezterm.home_dir .. '/.wezterm_theme.lua'
 wezterm.add_to_config_reload_watch_list(theme_file) -- recarrega sozinho quando o tema muda
 
@@ -33,9 +33,22 @@ end
 
 config.keys = {
   { key = 'g', mods = 'CTRL|ALT', action = theme_cmd('toggle') },
-  { key = 't', mods = 'CTRL|ALT', action = theme_cmd('next') },
-  { key = 'T', mods = 'CTRL|ALT|SHIFT', action = theme_cmd('prev') },
 }
+
+-- Seletor estilo Alt+Tab (Ctrl+Alt+T / Ctrl+Alt+Shift+T): prévia ao vivo, confirma ao soltar Ctrl/Alt.
+-- Veja .wezterm_switcher.lua (dados em .wezterm_themes/, gerados por `theme sync`).
+local sw_ok, sw = pcall(dofile, wezterm.home_dir .. '/.wezterm_switcher.lua')
+if sw_ok and type(sw) == 'table' then
+  local setup_ok, err = pcall(sw.setup, config, wezterm, {
+    dir = wezterm.home_dir .. '/.wezterm_themes',
+    current = T.name,
+    theme_cmd = { 'wsl.exe', '-e', '/home/luqueta/.local/bin/theme' },
+    frame_font = wezterm.font_with_fallback { 'JetBrains Mono', 'Cascadia Code' },
+  })
+  if not setup_ok then wezterm.log_error('switcher: ' .. tostring(err)) end
+else
+  wezterm.log_error('switcher: módulo indisponível (' .. tostring(sw) .. ')')
+end
 
 -- Fonte
 config.font = wezterm.font_with_fallback { 'JetBrains Mono', 'Cascadia Code', 'Consolas' }

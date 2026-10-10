@@ -22,7 +22,7 @@ done
 # WezTerm roda no Windows: copia a config (o tema vem do sistema `theme`) para windows/
 WINHOME=${WINHOME:-/mnt/c/Users/blubs}
 rm -rf windows && mkdir -p windows
-for f in .wezterm.lua; do [ -e "$WINHOME/$f" ] && cp -a "$WINHOME/$f" "windows/$f"; done
+for f in .wezterm.lua .wezterm_switcher.lua; do [ -e "$WINHOME/$f" ] && cp -a "$WINHOME/$f" "windows/$f"; done
 
 # exporta cada tema do nvim como pacote independente (themes/<nome>.nvim) — nunca perde o tema
 for p in "$HOME"/.config/theme/palettes/*.toml; do

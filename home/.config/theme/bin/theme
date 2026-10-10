@@ -8,6 +8,7 @@ Uso:
   theme toggle            alterna entre o último tema e o clássico (visual original)
   theme next | prev       cicla entre os temas (sem o clássico)
   theme build [nome]      só gera os arquivos (não muda o estado)
+  theme sync              exporta os temas para o seletor do WezTerm (Ctrl+Alt+T)
   theme export nvim [n]   exporta o colorscheme do nvim como pacote independente
 
 Um tema é um arquivo em palettes/<nome>.toml. Para criar outro: copie um existente e edite.
@@ -246,6 +247,37 @@ def build(name):
     return p
 
 
+WEZ_THEMES = WINHOME / ".wezterm_themes"
+
+
+def sync_wezterm():
+    """Exporta os dados de TODOS os temas (exceto classic) para o WezTerm: <home Windows>/.wezterm_themes/.
+    O seletor Ctrl+Alt+T usa isso para a prévia ao vivo, sem chamar processo externo."""
+    global OUT
+    if not WINHOME.exists():
+        return
+    names = [n for n in palettes() if n != CLASSIC]
+    saved = OUT
+    entries = []
+    for n in names:
+        p = load(n)
+        OUT = BUILD / n
+        OUT.mkdir(parents=True, exist_ok=True)
+        gen_wezterm(p, variables(p))
+        write(WEZ_THEMES / f"{n}.lua", (OUT / "wezterm.lua").read_text(encoding="utf-8"))
+        c = p["colors"]
+        entries.append({"name": n, "label": p.get("label", n), "accent1": c["accent1"], "accent2": c["accent2"],
+                        "bg": c["bg"], "fg": c["fg"]})
+    OUT = saved
+    last = LAST.read_text().strip() if LAST.exists() else DEFAULT
+    index = {"names": entries, "last": last if last in names else (names[0] if names else "")}
+    write(WEZ_THEMES / "index.lua", "-- gerado por `theme sync`\nreturn %s\n" % lua(index))
+    # remove arquivos de temas que não existem mais
+    for f in WEZ_THEMES.glob("*.lua"):
+        if f.stem != "index" and f.stem not in names:
+            f.unlink()
+
+
 def install(name):
     """Torna o tema ativo: build/current -> build/<nome> e instala os arquivos que vivem fora."""
     cur = BUILD / "current"
@@ -305,6 +337,7 @@ def activate(name):
     if name != CLASSIC:
         LAST.parent.mkdir(parents=True, exist_ok=True)
         LAST.write_text(name)
+    sync_wezterm()
     reload_live()
     print(f"{name}: {p.get('label', name)}")
 
@@ -356,6 +389,9 @@ def main(argv):
         else:
             i = names.index(current())
             activate(names[(i + (1 if cmd == "next" else -1)) % len(names)])
+    elif cmd == "sync":
+        sync_wezterm()
+        print(f"exportado para o WezTerm: {WEZ_THEMES}")
     elif cmd == "build":
         for n in (argv[2:] or [current()]):
             build(n)
