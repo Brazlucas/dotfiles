@@ -25,6 +25,10 @@ ZSH_THEME="$(cat ~/.config/theme/build/current/zsh_theme 2>/dev/null || echo suv
 
 source $ZSH/oh-my-zsh.sh
 
+# zsh-autocomplete: o compinit do oh-my-zsh roda antes do do plugin e não registra as funções
+# auxiliares (#autoload) de Completions/, o que gera "command not found: _autocomplete__*"
+autoload -Uz $ZSH/custom/plugins/zsh-autocomplete/Completions/_autocomplete__*(N:t)
+
 # Cores e prompt do tema ativo (ls/eza, fzf, bat, lazygit, ripgrep, plugins): aplica agora e
 # acompanha `theme set/toggle/next` a cada prompt, sem precisar de exec zsh
 [[ -r ~/.config/theme/zsh-sync.zsh ]] && source ~/.config/theme/zsh-sync.zsh
