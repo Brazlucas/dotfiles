@@ -1,4 +1,4 @@
-# Geradores extras ("colorir tudo"): LS_COLORS/eza, fzf, ripgrep, zsh plugins, bat, delta, lazygit, lazydocker, btop, htop.
+# Geradores extras ("colorir tudo"): LS_COLORS/eza, fzf, ripgrep, zsh plugins, bat, delta, lazygit, lazydocker, btop, htop, wttr.
 # Carregado por bin/theme (register(m) recebe o módulo principal).
 import shutil
 
@@ -169,4 +169,42 @@ def register(m):
         data = {"name": v["label"], "base": "dark", "overrides": o}
         m.write(m.OUT / "claude-theme.json", json.dumps(data, indent=2, ensure_ascii=False) + "\n")
 
-    return [gen_env, gen_files, gen_claude]
+    def gen_wttr(p, v):
+        """Script sed que remapeia as cores 256 fixas do wttr.in para índices ANSI (por matiz).
+        Índices da paleta ANSI (não RGB) são repintados pelo WezTerm quando o tema muda, inclusive no texto já impresso."""
+        import colorsys
+        out = ["# wttr.in — gerado por `theme`; remapeia cores 256 para a paleta ANSI do terminal"]
+        if p["features"].get("colorize"):
+            def xterm(n):
+                if n < 232:
+                    n -= 16
+                    return tuple((0 if x == 0 else 55 + 40 * x) for x in (n // 36, n // 6 % 6, n % 6))
+                return (8 + 10 * (n - 232),) * 3
+
+            def pick(n):
+                h, s, val = colorsys.rgb_to_hsv(*(x / 255 for x in xterm(n)))
+                if s < 0.2:
+                    return "35" if val > 0.55 else "90"   # nuvem = accent1 (ANSI 5)
+                h *= 360
+                if h < 15 or h >= 340:
+                    return "31"
+                if h < 45:
+                    return "91"
+                if h < 70:
+                    return "33"
+                if h < 170:
+                    return "32"
+                if h < 200:
+                    return "36"
+                if h < 240:
+                    return "36"   # chuva/neve = accent2 (ANSI 6)
+                if h < 260:
+                    return "34"
+                return "35"
+
+            for n in range(16, 256):
+                out.append(f"s/\\x1b\\[38;5;{n}m/\\x1b[{pick(n)}m/g")
+            out.append("1s/.*/\\x1b[1;35m&\\x1b[0m/")
+        m.write(m.OUT / "wttr.sed", "\n".join(out) + "\n")
+
+    return [gen_env, gen_files, gen_claude, gen_wttr]

@@ -1,12 +1,12 @@
-# lazydocker — tema gerado por `theme` (Rosé Pine); não edite à mão (palettes/rose-pine.toml)
+# lazydocker — tema gerado por `theme` (Blade Runner); não edite à mão (palettes/blade-runner.toml)
 gui:
   theme:
     activeBorderColor:
-      - '#c4a7e7'
+      - '#ff7a1a'
       - bold
     inactiveBorderColor:
-      - '#6e6a86'
+      - '#566377'
     selectedLineBgColor:
-      - '#403d52'
+      - '#173a4a'
     optionsTextColor:
-      - '#9ccfd8'
+      - '#19e3e8'
