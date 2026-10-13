@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# lazydocker que acompanha o `theme`: o lazydocker só lê as cores ao iniciar, então este wrapper
+# observa build/.active e, quando o tema muda, reinicia o lazydocker (já relendo o config novo).
+# Sair com q/ctrl+c encerra de verdade. Perde só a posição na tela, não os containers.
+ACTIVE=~/.config/theme/build/.active
+FLAG=$(mktemp -t lazydocker-live.XXXXXX)
+trap 'rm -f "$FLAG"' EXIT
+while :; do
+  : > "$FLAG"
+  start=$(cut -d' ' -f1 "$ACTIVE" 2>/dev/null)
+  (
+    while sleep 0.5; do
+      now=$(cut -d' ' -f1 "$ACTIVE" 2>/dev/null)
+      if [[ $now != "$start" ]]; then
+        sleep 1.5   # espera o theme gravar o config.yml (extras vêm depois do marcador)
+        echo restart > "$FLAG"
+        pkill -TERM -P $$ -x lazydocker
+        exit
+      fi
+    done
+  ) &
+  watcher=$!
+  /usr/sbin/lazydocker "$@"
+  kill "$watcher" 2>/dev/null; wait "$watcher" 2>/dev/null
+  [[ -s $FLAG ]] || exit 0
+done

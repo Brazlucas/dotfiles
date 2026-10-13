@@ -1,4 +1,4 @@
-# Instalação dos extras que vivem fora do ~/.config/theme (bat, btop, pgcli, git).
+# Instalação dos extras que vivem fora do ~/.config/theme (bat, btop, htop, lazydocker, pgcli, git).
 import re
 import shutil
 import subprocess
@@ -28,6 +28,14 @@ def install(m, name, src):
     else:
         _sub_line(btop, r'^color_theme = .*$', 'color_theme = "/usr/share/btop/themes/adapta.theme"')
         _sub_line(btop, r'^truecolor = .*$', 'truecolor = False')
+
+    # lazydocker: o config.yml inteiro é do tema (colorize) ou vazio (clássico = visual original)
+    ld = cfg / "lazydocker" / "config.yml"
+    m.write(ld, (src / "lazydocker.yml").read_text(encoding="utf-8") if colorize else "")
+
+    # htop: não aceita cores customizadas, só os esquemas internos, que usam a paleta ANSI do terminal
+    # (já acompanha o WezTerm). "Black Night" (6) respeita o fundo transparente; o clássico volta ao Default (0)
+    _sub_line(cfg / "htop" / "htoprc", r'^color_scheme=.*$', f"color_scheme={f.get('htop_scheme', 6) if colorize else 0}")
 
     # pgcli: estilo pygments mais próximo
     _sub_line(cfg / "pgcli" / "config", r'^syntax_style = .*$', f"syntax_style = {f.get('pgcli_style', 'default')}")

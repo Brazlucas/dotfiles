@@ -1,0 +1,12 @@
+# lazydocker — tema gerado por `theme` (Rosé Pine); não edite à mão (palettes/rose-pine.toml)
+gui:
+  theme:
+    activeBorderColor:
+      - '#c4a7e7'
+      - bold
+    inactiveBorderColor:
+      - '#6e6a86'
+    selectedLineBgColor:
+      - '#403d52'
+    optionsTextColor:
+      - '#9ccfd8'

@@ -46,6 +46,7 @@ qt5-quickcontrols
 re2c
 reflector
 ripgrep
+rsync
 sudo
 thefuck
 tmux

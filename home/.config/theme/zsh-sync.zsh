@@ -77,3 +77,6 @@ _theme_zshexit() { rm -f $_THEME_SHELL_REG/$$ 2>/dev/null }
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _theme_precmd
 add-zsh-hook zshexit _theme_zshexit
+
+# lazydocker reinicia sozinho quando o tema muda (ele só lê as cores ao iniciar)
+lazydocker() { ~/.config/theme/bin/lazydocker-live "$@" }

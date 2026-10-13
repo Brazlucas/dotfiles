@@ -1,4 +1,4 @@
-# Geradores extras ("colorir tudo"): LS_COLORS/eza, fzf, ripgrep, zsh plugins, bat, delta, lazygit, btop.
+# Geradores extras ("colorir tudo"): LS_COLORS/eza, fzf, ripgrep, zsh plugins, bat, delta, lazygit, lazydocker, btop, htop.
 # Carregado por bin/theme (register(m) recebe o módulo principal).
 import shutil
 
@@ -90,7 +90,8 @@ def register(m):
         c = p["colors"]
         T = m.ROOT / "templates"
         for tmpl, out in (("btop.theme.tmpl", "btop.theme"), ("bat.tmTheme.tmpl", "bat.tmTheme"),
-                          ("lazygit.yml.tmpl", "lazygit.yml")):
+                          ("lazygit.yml.tmpl", "lazygit.yml"),
+                          ("lazydocker.yml.tmpl", "lazydocker.yml")):
             text = m.render((T / tmpl).read_text(encoding="utf-8"), v)
             m.write(m.OUT / out, text if f.get("colorize") else f"# {out}: tema sem colorização extra\n")
         rg = "# ripgrep — gerado por `theme`\n"

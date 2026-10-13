@@ -164,3 +164,6 @@ alias dev="tmuxp load ~/workspace2.yaml"
 
 # Opportunity Hunter
 alias hunter="$HOME/repo/opportunity-hunter/bin/hunter"
+
+# Previsão do tempo (wttr.in) ao abrir o terminal
+[[ -r ~/.config/cyber/wttr.zsh ]] && { source ~/.config/cyber/wttr.zsh; wttr }
