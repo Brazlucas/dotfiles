@@ -91,7 +91,8 @@ def register(m):
         T = m.ROOT / "templates"
         for tmpl, out in (("btop.theme.tmpl", "btop.theme"), ("bat.tmTheme.tmpl", "bat.tmTheme"),
                           ("lazygit.yml.tmpl", "lazygit.yml"),
-                          ("lazydocker.yml.tmpl", "lazydocker.yml")):
+                          ("lazydocker.yml.tmpl", "lazydocker.yml"),
+                          ("modo.toml.tmpl", "modo.toml")):
             text = m.render((T / tmpl).read_text(encoding="utf-8"), v)
             m.write(m.OUT / out, text if f.get("colorize") else f"# {out}: tema sem colorização extra\n")
         rg = "# ripgrep — gerado por `theme`\n"
