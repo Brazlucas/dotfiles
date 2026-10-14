@@ -1,0 +1,64 @@
+# Monokai Pro — Rosa, amarelo e verde sobre grafite quente
+name  = "monokai-pro"
+label = "Monokai Pro"
+kind  = "dark"
+
+[colors]
+bg      = "#2d2a2e"
+bg_alt  = "#3b393c"
+bg_deep = "#242225"
+fg      = "#fcfcfa"
+dim     = "#7a787a"
+subtle  = "#b4b3b4"
+delim   = "#d5d4d4"
+line    = "#5b595c"
+sel     = "#5b595c"
+sel_fg  = "#fcfcfa"
+accent1 = "#ff6188"
+accent2 = "#78dce8"
+red     = "#ff6188"
+green   = "#a9dc76"
+yellow  = "#ffd866"
+blue    = "#fc9867"
+magenta = "#ab9df2"
+cyan    = "#78dce8"
+white   = "#fcfcfa"
+ansi    = ["#2d2a2e", "#ff6188", "#a9dc76", "#ffd866", "#fc9867", "#ab9df2", "#78dce8", "#fcfcfa"]
+brights = ["#727072", "#ff6188", "#a9dc76", "#ffd866", "#fc9867", "#ab9df2", "#78dce8", "#fcfcfa"]
+
+[diff]
+add    = "#464e3c"
+change = "#5b423b"
+delete = "#5b3642"
+text   = "#5b595c"
+
+[tabbar]
+bg          = "#242225"
+active_bg   = "#2d2a2e"
+active_fg   = "#78dce8"
+inactive_bg = "#242225"
+inactive_fg = "#7a787a"
+hover_bg    = "#3b393c"
+hover_fg    = "#ff6188"
+
+[mascot]
+body        = "#ff6188"
+caption     = "#78dce8"
+caption_dim = "#7a787a"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#78dce8", right = "#ab9df2", bottom = "#ff6188", left = "#ff6188" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "dark-ansi"
+colorize    = true
+pgcli_style = "monokai"

@@ -1,0 +1,64 @@
+# Palenight — Roxo-acinzentado suave do Material
+name  = "palenight"
+label = "Palenight"
+kind  = "dark"
+
+[colors]
+bg      = "#292d3e"
+bg_alt  = "#323648"
+bg_deep = "#212432"
+fg      = "#a6accd"
+dim     = "#6f759b"
+subtle  = "#888eb2"
+delim   = "#969cbe"
+line    = "#444267"
+sel     = "#444267"
+sel_fg  = "#a6accd"
+accent1 = "#c792ea"
+accent2 = "#89ddff"
+red     = "#f07178"
+green   = "#c3e88d"
+yellow  = "#ffcb6b"
+blue    = "#82aaff"
+magenta = "#c792ea"
+cyan    = "#89ddff"
+white   = "#ffffff"
+ansi    = ["#292d3e", "#f07178", "#c3e88d", "#ffcb6b", "#82aaff", "#c792ea", "#89ddff", "#a6accd"]
+brights = ["#676e95", "#ff8b92", "#ddffa7", "#ffe585", "#9cc4ff", "#e1acff", "#a3f7ff", "#ffffff"]
+
+[diff]
+add    = "#48524e"
+change = "#3d4868"
+delete = "#553c4b"
+text   = "#444267"
+
+[tabbar]
+bg          = "#212432"
+active_bg   = "#292d3e"
+active_fg   = "#89ddff"
+inactive_bg = "#212432"
+inactive_fg = "#6f759b"
+hover_bg    = "#323648"
+hover_fg    = "#c792ea"
+
+[mascot]
+body        = "#c792ea"
+caption     = "#89ddff"
+caption_dim = "#6f759b"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#89ddff", right = "#c792ea", bottom = "#c792ea", left = "#c792ea" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "dark-ansi"
+colorize    = true
+pgcli_style = "material"

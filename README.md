@@ -24,7 +24,7 @@ O que é gerado:
 | bat · delta · lazygit · btop · ripgrep · pgcli | tema/estilo equivalente |
 | hub-tui (`hub`, `mgpu`/`mqwen`) | `modo.toml` gerado por tema; o TUI recarrega ao vivo quando o tema muda |
 
-**Temas (16 + o original):** `cyberpunk` (padrão), `tokyo-night`, `catppuccin-mocha`, `dracula`, `gruvbox-dark`, `nord`, `one-dark`, `rose-pine`, `kanagawa`, `everforest`, `solarized-dark`, `synthwave-84`, `matrix`, `ayu-mirage` e os originais `acid-jungle` (lima/amarelo/ciano) e `blade-runner` (laranja-néon/ciano). `classic` é o visual de antes de tudo isso e fica fora do ciclo `next/prev`.
+**Temas (25 + o original):** `cyberpunk` (padrão), `tokyo-night`, `catppuccin-mocha`, `dracula`, `gruvbox-dark`, `nord`, `one-dark`, `rose-pine`, `kanagawa`, `everforest`, `solarized-dark`, `synthwave-84`, `matrix`, `ayu-mirage`, `github-dark`, `night-owl`, `palenight`, `oxocarbon`, `nightfox`, `monokai-pro`, `horizon`, `poimandres`, `everblush` e os originais `acid-jungle` (lima/amarelo/ciano) e `blade-runner` (laranja-néon/ciano). `classic` é o visual de antes de tudo isso: fica **fora** do ciclo `next/prev` e do seletor `Ctrl+Alt+T`, e é separado também na aba TEMAS do hub (tecla `o`); `theme toggle` / `theme set classic` levam até ele.
 
 ```sh
 theme list              # lista e marca o ativo

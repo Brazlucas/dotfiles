@@ -1,0 +1,64 @@
+# Nightfox — Azul-petróleo com roxo e verde-sálvia
+name  = "nightfox"
+label = "Nightfox"
+kind  = "dark"
+
+[colors]
+bg      = "#192330"
+bg_alt  = "#262f3b"
+bg_deep = "#141c26"
+fg      = "#cdcecf"
+dim     = "#738091"
+subtle  = "#9ca3ad"
+delim   = "#b2b7bc"
+line    = "#2b3b51"
+sel     = "#2b3b51"
+sel_fg  = "#cdcecf"
+accent1 = "#9d79d6"
+accent2 = "#63cdcf"
+red     = "#c94f6d"
+green   = "#81b29a"
+yellow  = "#dbc074"
+blue    = "#719cd6"
+magenta = "#9d79d6"
+cyan    = "#63cdcf"
+white   = "#dfdfe0"
+ansi    = ["#393b44", "#c94f6d", "#81b29a", "#dbc074", "#719cd6", "#9d79d6", "#63cdcf", "#dfdfe0"]
+brights = ["#575860", "#d16983", "#8ebaa4", "#e0c989", "#86abdc", "#baa1e2", "#7ad4d6", "#e4e4e5"]
+
+[diff]
+add    = "#2e4045"
+change = "#2c3e55"
+delete = "#402d3d"
+text   = "#2b3b51"
+
+[tabbar]
+bg          = "#141c26"
+active_bg   = "#192330"
+active_fg   = "#63cdcf"
+inactive_bg = "#141c26"
+inactive_fg = "#738091"
+hover_bg    = "#262f3b"
+hover_fg    = "#9d79d6"
+
+[mascot]
+body        = "#9d79d6"
+caption     = "#63cdcf"
+caption_dim = "#738091"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#63cdcf", right = "#9d79d6", bottom = "#9d79d6", left = "#9d79d6" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "dark-ansi"
+colorize    = true
+pgcli_style = "native"

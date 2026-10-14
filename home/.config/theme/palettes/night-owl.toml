@@ -1,0 +1,64 @@
+# Night Owl — Azul-noite para quem programa de madrugada
+name  = "night-owl"
+label = "Night Owl"
+kind  = "dark"
+
+[colors]
+bg      = "#011627"
+bg_alt  = "#102435"
+bg_deep = "#01121f"
+fg      = "#d6deeb"
+dim     = "#637777"
+subtle  = "#97a5ab"
+delim   = "#b4bfc8"
+line    = "#1d3b53"
+sel     = "#1d3b53"
+sel_fg  = "#d6deeb"
+accent1 = "#c792ea"
+accent2 = "#7fdbca"
+red     = "#ef5350"
+green   = "#addb67"
+yellow  = "#ecc48d"
+blue    = "#82aaff"
+magenta = "#c792ea"
+cyan    = "#7fdbca"
+white   = "#ffffff"
+ansi    = ["#011627", "#ef5350", "#22da6e", "#c5e478", "#82aaff", "#c792ea", "#21c7a8", "#ffffff"]
+brights = ["#575656", "#ef5350", "#22da6e", "#ffeb95", "#82aaff", "#c792ea", "#7fdbca", "#ffffff"]
+
+[diff]
+add    = "#233d34"
+change = "#1d3757"
+delete = "#352330"
+text   = "#1d3b53"
+
+[tabbar]
+bg          = "#01121f"
+active_bg   = "#011627"
+active_fg   = "#7fdbca"
+inactive_bg = "#01121f"
+inactive_fg = "#637777"
+hover_bg    = "#102435"
+hover_fg    = "#c792ea"
+
+[mascot]
+body        = "#c792ea"
+caption     = "#7fdbca"
+caption_dim = "#637777"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#7fdbca", right = "#c792ea", bottom = "#c792ea", left = "#c792ea" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "dark-ansi"
+colorize    = true
+pgcli_style = "night-owl"

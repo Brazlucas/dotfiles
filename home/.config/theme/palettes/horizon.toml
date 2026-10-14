@@ -1,0 +1,64 @@
+# Horizon — Pôr do sol em rosa e turquesa
+name  = "horizon"
+label = "Horizon"
+kind  = "dark"
+
+[colors]
+bg      = "#1c1e26"
+bg_alt  = "#292b33"
+bg_deep = "#16181e"
+fg      = "#d5d8da"
+dim     = "#6c6f93"
+subtle  = "#9b9eb3"
+delim   = "#b6b8c5"
+line    = "#2e303e"
+sel     = "#2e303e"
+sel_fg  = "#d5d8da"
+accent1 = "#ee64ac"
+accent2 = "#59e1e3"
+red     = "#e95678"
+green   = "#29d398"
+yellow  = "#fab795"
+blue    = "#26bbd9"
+magenta = "#ee64ac"
+cyan    = "#59e1e3"
+white   = "#ffffff"
+ansi    = ["#16161c", "#e95678", "#29d398", "#fab795", "#26bbd9", "#ee64ac", "#59e1e3", "#d5d8da"]
+brights = ["#5b5858", "#ec6a88", "#3fdaa4", "#fbc3a7", "#3fc4de", "#f075b5", "#6be4e6", "#d5d8da"]
+
+[diff]
+add    = "#1f423d"
+change = "#1e414d"
+delete = "#492a38"
+text   = "#2e303e"
+
+[tabbar]
+bg          = "#16181e"
+active_bg   = "#1c1e26"
+active_fg   = "#59e1e3"
+inactive_bg = "#16181e"
+inactive_fg = "#6c6f93"
+hover_bg    = "#292b33"
+hover_fg    = "#ee64ac"
+
+[mascot]
+body        = "#ee64ac"
+caption     = "#59e1e3"
+caption_dim = "#6c6f93"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#59e1e3", right = "#ee64ac", bottom = "#ee64ac", left = "#ee64ac" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "dark-ansi"
+colorize    = true
+pgcli_style = "monokai"

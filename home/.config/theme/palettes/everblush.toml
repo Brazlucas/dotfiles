@@ -1,0 +1,64 @@
+# Everblush — Verde-água e rosa-antigo, baixo contraste
+name  = "everblush"
+label = "Everblush"
+kind  = "dark"
+
+[colors]
+bg      = "#141b1e"
+bg_alt  = "#22282b"
+bg_deep = "#101618"
+fg      = "#dadada"
+dim     = "#5c696d"
+subtle  = "#959c9e"
+delim   = "#b4b8b9"
+line    = "#2d3437"
+sel     = "#2d3437"
+sel_fg  = "#dadada"
+accent1 = "#c47fd5"
+accent2 = "#6cbfbf"
+red     = "#e57474"
+green   = "#8ccf7e"
+yellow  = "#e5c76b"
+blue    = "#67b0e8"
+magenta = "#c47fd5"
+cyan    = "#6cbfbf"
+white   = "#ffffff"
+ansi    = ["#232a2d", "#e57474", "#8ccf7e", "#e5c76b", "#67b0e8", "#c47fd5", "#6cbfbf", "#b3b9b8"]
+brights = ["#2d3437", "#ef7e7e", "#96d988", "#f4d67a", "#71baf2", "#ce89df", "#7ac9c9", "#bdc3c2"]
+
+[diff]
+add    = "#2c3f31"
+change = "#263c4a"
+delete = "#422f31"
+text   = "#2d3437"
+
+[tabbar]
+bg          = "#101618"
+active_bg   = "#141b1e"
+active_fg   = "#6cbfbf"
+inactive_bg = "#101618"
+inactive_fg = "#5c696d"
+hover_bg    = "#22282b"
+hover_fg    = "#c47fd5"
+
+[mascot]
+body        = "#c47fd5"
+caption     = "#6cbfbf"
+caption_dim = "#5c696d"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#6cbfbf", right = "#c47fd5", bottom = "#c47fd5", left = "#c47fd5" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "dark-ansi"
+colorize    = true
+pgcli_style = "native"

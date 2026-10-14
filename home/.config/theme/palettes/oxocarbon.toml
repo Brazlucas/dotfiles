@@ -1,0 +1,64 @@
+# Oxocarbon — Grafite da IBM Carbon, rosa e azul
+name  = "oxocarbon"
+label = "Oxocarbon"
+kind  = "dark"
+
+[colors]
+bg      = "#161616"
+bg_alt  = "#252626"
+bg_deep = "#121212"
+fg      = "#f2f4f8"
+dim     = "#6f6f6f"
+subtle  = "#aaabad"
+delim   = "#cbcccf"
+line    = "#393939"
+sel     = "#393939"
+sel_fg  = "#f2f4f8"
+accent1 = "#ee5396"
+accent2 = "#33b1ff"
+red     = "#ee5396"
+green   = "#42be65"
+yellow  = "#ffe97b"
+blue    = "#78a9ff"
+magenta = "#be95ff"
+cyan    = "#08bdba"
+white   = "#ffffff"
+ansi    = ["#262626", "#ee5396", "#42be65", "#ffe97b", "#33b1ff", "#ff7eb6", "#08bdba", "#dde1e6"]
+brights = ["#393939", "#ff7eb6", "#42be65", "#ffe97b", "#82cfff", "#ff7eb6", "#3ddbd9", "#ffffff"]
+
+[diff]
+add    = "#1f3826"
+change = "#2c3649"
+delete = "#462332"
+text   = "#393939"
+
+[tabbar]
+bg          = "#121212"
+active_bg   = "#161616"
+active_fg   = "#33b1ff"
+inactive_bg = "#121212"
+inactive_fg = "#6f6f6f"
+hover_bg    = "#252626"
+hover_fg    = "#ee5396"
+
+[mascot]
+body        = "#ee5396"
+caption     = "#33b1ff"
+caption_dim = "#6f6f6f"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#33b1ff", right = "#be95ff", bottom = "#ee5396", left = "#ee5396" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "dark-ansi"
+colorize    = true
+pgcli_style = "native"

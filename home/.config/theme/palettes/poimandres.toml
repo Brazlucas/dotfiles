@@ -1,0 +1,64 @@
+# Poimandres — Menta e rosa-claro sobre azul-acinzentado
+name  = "poimandres"
+label = "Poimandres"
+kind  = "dark"
+
+[colors]
+bg      = "#1b1e28"
+bg_alt  = "#252834"
+bg_deep = "#161820"
+fg      = "#a6accd"
+dim     = "#767c9d"
+subtle  = "#8c92b3"
+delim   = "#989ebf"
+line    = "#303340"
+sel     = "#303340"
+sel_fg  = "#a6accd"
+accent1 = "#d0679d"
+accent2 = "#5de4c7"
+red     = "#d0679d"
+green   = "#5de4c7"
+yellow  = "#fffac2"
+blue    = "#add7ff"
+magenta = "#fcc5e9"
+cyan    = "#89ddff"
+white   = "#ffffff"
+ansi    = ["#1b1e28", "#d0679d", "#5de4c7", "#fffac2", "#89ddff", "#fcc5e9", "#add7ff", "#ffffff"]
+brights = ["#a6accd", "#d0679d", "#5de4c7", "#fffac2", "#89ddff", "#fae4fc", "#91b4d5", "#ffffff"]
+
+[diff]
+add    = "#284648"
+change = "#3b4757"
+delete = "#432e42"
+text   = "#303340"
+
+[tabbar]
+bg          = "#161820"
+active_bg   = "#1b1e28"
+active_fg   = "#5de4c7"
+inactive_bg = "#161820"
+inactive_fg = "#767c9d"
+hover_bg    = "#252834"
+hover_fg    = "#d0679d"
+
+[mascot]
+body        = "#d0679d"
+caption     = "#5de4c7"
+caption_dim = "#767c9d"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#5de4c7", right = "#fcc5e9", bottom = "#d0679d", left = "#d0679d" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "dark-ansi"
+colorize    = true
+pgcli_style = "material"

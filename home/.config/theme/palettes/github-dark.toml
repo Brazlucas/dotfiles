@@ -1,0 +1,64 @@
+# GitHub Dark — Azul e roxo do editor do GitHub
+name  = "github-dark"
+label = "GitHub Dark"
+kind  = "dark"
+
+[colors]
+bg      = "#0d1117"
+bg_alt  = "#1a1e25"
+bg_deep = "#0a0e12"
+fg      = "#c9d1d9"
+dim     = "#6e7681"
+subtle  = "#979fa9"
+delim   = "#aeb6bf"
+line    = "#1c2d4a"
+sel     = "#1c2d4a"
+sel_fg  = "#c9d1d9"
+accent1 = "#d2a8ff"
+accent2 = "#79c0ff"
+red     = "#ff7b72"
+green   = "#3fb950"
+yellow  = "#d29922"
+blue    = "#58a6ff"
+magenta = "#bc8cff"
+cyan    = "#39c5cf"
+white   = "#f0f6fc"
+ansi    = ["#484f58", "#ff7b72", "#3fb950", "#d29922", "#58a6ff", "#bc8cff", "#39c5cf", "#b1bac4"]
+brights = ["#6e7681", "#ffa198", "#56d364", "#e3b341", "#79c0ff", "#d2a8ff", "#56d4dd", "#f0f6fc"]
+
+[diff]
+add    = "#173322"
+change = "#1e324a"
+delete = "#42282b"
+text   = "#1c2d4a"
+
+[tabbar]
+bg          = "#0a0e12"
+active_bg   = "#0d1117"
+active_fg   = "#79c0ff"
+inactive_bg = "#0a0e12"
+inactive_fg = "#6e7681"
+hover_bg    = "#1a1e25"
+hover_fg    = "#d2a8ff"
+
+[mascot]
+body        = "#d2a8ff"
+caption     = "#79c0ff"
+caption_dim = "#6e7681"
+
+[features]
+glass       = true
+opacity     = 0.80
+fancy_tabs  = true
+padding     = 0
+font_size   = 11.5
+line_height = 1.1
+cursor      = "BlinkingBar"
+frame       = { top = "#79c0ff", right = "#bc8cff", bottom = "#d2a8ff", left = "#d2a8ff" }
+tmux        = "neon"
+neko        = true
+zsh_theme   = "theme-active"
+nvim        = "generated"
+claude      = "dark-ansi"
+colorize    = true
+pgcli_style = "github-dark"
