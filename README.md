@@ -3,12 +3,16 @@
 Backup das configs do meu ambiente: zsh (oh-my-zsh + plugins), tmux/tmuxp, nvim (LazyVim), WezTerm (Windows), btop, htop, lazygit, git, etc.
 
 - `./backup.sh`  copia as configs atuais (WSL em `home/`, WezTerm do Windows em `windows/`), exporta os temas do nvim e atualiza `packages/`
-- `./restore.sh` restaura tudo (faz backup dos arquivos antigos), clona os plugins e ativa o tema salvo
+- `./restore.sh` restaura tudo (faz backup dos arquivos antigos), clona os plugins, instala o CLI `theme` (binário Rust do [hub-tui](https://github.com/Brazlucas/hub-tui)) e ativa o tema salvo
 
 Segredos (tokens do ngrok, `.git-credentials`, `.ssh`, `.aws`, `.npmrc`, históricos) **não** são versionados.
 
 ## Sistema de temas (`theme`)
-Um tema é **só um arquivo de paleta** (`home/.config/theme/palettes/<nome>.toml`). O CLI `theme` gera a config de todas as ferramentas a partir dela:
+Um tema é **só um arquivo de paleta** (`home/.config/theme/palettes/<nome>.toml`). O CLI `theme` gera a config de todas as ferramentas a partir dela.
+
+> **O motor é um binário Rust**, o crate `crates/theme` do repo [hub-tui](https://github.com/Brazlucas/hub-tui) (instalado em `~/.local/bin/theme`). O motor Python original continua em `home/.config/theme/bin/theme` só como **reserva**: `theme-py` roda ele, e `ln -sf ~/.config/theme/bin/theme ~/.local/bin/theme` volta a usá-lo. Paletas e templates (aqui) são os mesmos para os dois. A saída do Rust é idêntica à do Python (`scripts/theme-golden.sh` no hub-tui).
+
+O que é gerado:
 
 | ferramenta | o que é gerado |
 |---|---|
@@ -33,7 +37,7 @@ theme repair            # limpa estado acumulado do tmux e redesenha os clientes
 **Atalhos:** WezTerm `Ctrl+Alt+G` (liga/desliga) · tmux `prefixo + T` · nvim `<leader>uz`.
 
 **Seletor estilo Alt+Tab (`Ctrl+Alt+T` / `Ctrl+Alt+Shift+T`):** um toque cicla para o próximo tema; segurando `Ctrl+Alt` e batendo `T` você avança vendo a **prévia ao vivo** (o WezTerm se recolore e uma faixa mostra anterior · atual · seguinte) e ao **soltar** o tema é aplicado em tudo. `Esc` cancela, `Enter` confirma, setas navegam. Segurar só o `T` avança em ritmo controlado.
-Ajustes em `windows/.wezterm_switcher.lua` (`confirm_mode = 'release'|'timeout'`, `step_min_interval`, `debug`). Os dados vêm de `theme sync` (`C:\Users\<user>\.wezterm_themes\`). Testes do motor: `nvim -l home/.config/theme/tests/switcher_test.lua`.
+Ajustes em `windows/.wezterm_switcher.lua` (`confirm_mode = 'release'|'timeout'`, `step_min_interval`, `debug`). Os dados vêm de `theme sync` (`C:\Users\<user>\.wezterm_themes\`). Testes: `nvim -l home/.config/theme/tests/switcher_test.lua` (seletor) e, no hub-tui, `cargo test` + `scripts/theme-golden.sh` (motor).
 
 ### Criar um tema novo
 1. Copie uma paleta: `cp home/.config/theme/palettes/dracula.toml home/.config/theme/palettes/meu-tema.toml`
