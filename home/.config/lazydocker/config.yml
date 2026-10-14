@@ -1,12 +1,12 @@
-# lazydocker — tema gerado por `theme` (Blade Runner); não edite à mão (palettes/blade-runner.toml)
+# lazydocker — tema gerado por `theme` (Gruvbox Dark); não edite à mão (palettes/gruvbox-dark.toml)
 gui:
   theme:
     activeBorderColor:
-      - '#ff7a1a'
+      - '#fe8019'
       - bold
     inactiveBorderColor:
-      - '#566377'
+      - '#928374'
     selectedLineBgColor:
-      - '#173a4a'
+      - '#504945'
     optionsTextColor:
-      - '#19e3e8'
+      - '#8ec07c'

@@ -8,15 +8,34 @@ return {
       { "<leader>gV", "<cmd>DiffviewClose<cr>", desc = "Diffview: fechar" },
       { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "Histórico do arquivo" },
     },
-    opts = {
+    opts = function()
+      -- commit/push sem sair do Diffview (painel de arquivos): `-` já faz stage/unstage; C = commit, P = push
+      local function git(args, msg_ok)
+        vim.system(vim.list_extend({ "git" }, args), { text = true }, vim.schedule_wrap(function(r)
+          if r.code == 0 then
+            vim.notify(msg_ok, vim.log.levels.INFO)
+            require("diffview").emit("refresh_files")
+          else
+            vim.notify((r.stderr ~= "" and r.stderr or r.stdout), vim.log.levels.ERROR)
+          end
+        end))
+      end
+      local function commit()
+        vim.ui.input({ prompt = "Mensagem do commit: " }, function(msg)
+          if msg and msg ~= "" then git({ "commit", "-m", msg }, "Commit feito") end
+        end)
+      end
+      local function push() git({ "push" }, "Push feito") end
+      return {
       enhanced_diff_hl = true,
       keymaps = {
         -- <leader>e/<leader>b do Diffview roubam o atalho do neo-tree; `q` fecha o Diffview
         view = { ["<leader>e"] = false, ["<leader>b"] = false, ["q"] = "<cmd>DiffviewClose<cr>" },
-        file_panel = { ["<leader>e"] = false, ["<leader>b"] = false, ["q"] = "<cmd>DiffviewClose<cr>" },
+        file_panel = { ["<leader>e"] = false, ["<leader>b"] = false, ["q"] = "<cmd>DiffviewClose<cr>", ["C"] = commit, ["P"] = push },
         file_history_panel = { ["<leader>e"] = false, ["<leader>b"] = false, ["q"] = "<cmd>DiffviewClose<cr>" },
       },
-    },
+      }
+    end,
   },
 
   {
