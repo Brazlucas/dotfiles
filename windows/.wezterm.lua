@@ -1,8 +1,21 @@
 local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 
--- Shell: abre o WSL (distro padrão) direto no home
-config.default_prog = { 'wsl.exe', '--cd', '~' }
+-- Mesmo arquivo no Windows (WezTerm -> WSL) e no Linux nativo (Arch)
+local IS_WIN = wezterm.target_triple:find('windows') ~= nil
+
+-- Shell: no Windows abre o WSL (distro padrão) direto no home; no Linux usa o shell de login
+if IS_WIN then config.default_prog = { 'wsl.exe', '--cd', '~' } end
+
+-- Comando `theme`: dentro do WSL via wsl.exe (sem caminho fixo de usuário), direto no Linux
+local THEME_BIN = IS_WIN
+  and { 'wsl.exe', '-e', 'sh', '-c', 'exec "$HOME/.local/bin/theme" "$@"', 'theme' }
+  or { wezterm.home_dir .. '/.local/bin/theme' }
+local function theme_argv(arg)
+  local argv = { table.unpack(THEME_BIN) }
+  if arg then table.insert(argv, arg) end
+  return argv
+end
 
 -- ───── Tema ─────
 -- Tudo (cores, vidro, abas, fonte…) vem do sistema de temas global: `theme set <nome>` no WSL
@@ -27,7 +40,7 @@ if next(T.scheme) ~= nil then config.color_scheme = T.name end
 
 local function theme_cmd(arg)
   return wezterm.action_callback(function(window)
-    wezterm.background_child_process { 'wsl.exe', '-e', '/home/luqueta/.local/bin/theme', arg }
+    wezterm.background_child_process(theme_argv(arg))
   end)
 end
 
@@ -45,7 +58,7 @@ if sw_ok and type(sw) == 'table' then
     SW = sw.setup(config, wezterm, {
     dir = wezterm.home_dir .. '/.wezterm_themes',
     current = T.name,
-    theme_cmd = { 'wsl.exe', '-e', '/home/luqueta/.local/bin/theme' },
+    theme_cmd = theme_argv(),
     frame_font = wezterm.font_with_fallback { 'JetBrains Mono', 'Cascadia Code' },
     on_preview = function(window) if refresh_status then refresh_status(window) end end,
     })
@@ -74,7 +87,7 @@ config.default_cursor_style = F.cursor
 if not F.glass then
   -- ───── Sem vidro (ex.: clássico = visual original) ─────
   config.window_padding = { left = 8, right = 8, top = 6, bottom = 6 }
-  config.win32_system_backdrop = 'Disable'
+  if IS_WIN then config.win32_system_backdrop = 'Disable' end
   config.window_background_opacity = 1.0
   config.text_background_opacity = 1.0
   config.use_fancy_tab_bar = false
@@ -84,7 +97,7 @@ end
 
 -- ───── Vidro ─────
 -- Acrylic = transparência com blur; o padding 0 deixa o tmux encostar nas bordas
-config.win32_system_backdrop = 'Acrylic'
+if IS_WIN then config.win32_system_backdrop = 'Acrylic' end
 config.window_background_opacity = F.opacity
 config.text_background_opacity = 1.0
 config.use_resize_increments = true -- redimensiona em múltiplos exatos de célula (sem sobra embaixo)
@@ -103,7 +116,7 @@ config.max_fps = 120
 if F.fancy_tabs then
   -- Barra de abas integrada à janela (com botão X em cada aba e botões da janela)
   config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
-  config.integrated_title_button_style = 'Windows'
+  config.integrated_title_button_style = IS_WIN and 'Windows' or 'Gnome'
   config.integrated_title_button_alignment = 'Right'
   config.integrated_title_button_color = 'Auto'
   config.use_fancy_tab_bar = true

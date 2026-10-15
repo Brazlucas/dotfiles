@@ -49,3 +49,24 @@ Utilitários usados pelo tema: `sudo pacman -S --needed fzf eza bat git-delta`.
 
 ## Tema do nvim exportado
 `themes/<tema>.nvim/` — colorschemes independentes (sem depender do `theme`), regenerados a cada `backup.sh`. Veja `themes/cyberpunk.nvim/README.md`.
+
+## Arch nativo (notebook) — mesma estrutura, sem WSL
+
+O mesmo repositório serve ao WSL (WezTerm no Windows) e ao Linux nativo. `restore.sh` detecta o ambiente (`WSL_DISTRO_NAME` ou `microsoft` em `/proc/sys/kernel/osrelease`; `HUB_FORCE_NATIVE=1` força o modo nativo para testes):
+
+| | WSL | Arch nativo |
+|---|---|---|
+| `WINHOME` (WezTerm + estado do tema) | `/mnt/c/Users/blubs` | `$HOME` |
+| WezTerm | `.wezterm.lua` copiado para o Windows (abre `wsl.exe`) | `~/.wezterm.lua` (shell de login, sem Acrylic) |
+| hub-tui | abas Sistemas / GPU / QWEN / Temas | Sistemas / Temas / projetos |
+| workspace tmuxp | `workspace2.yaml` | `workspace-lite.yaml` se `~/repo/work/infocar-backend` não existir |
+
+Passo a passo no notebook:
+
+```sh
+git clone <dotfiles> ~/dotfiles && git clone git@github.com:Brazlucas/hub-tui.git ~/repo/hub-tui
+cd ~/dotfiles && ./restore.sh --packages     # pacman (packages/core.txt), rustup, plugins, theme e dotfiles
+cd ~/repo/hub-tui && cargo build --release && install -m755 target/release/hub ~/.local/bin/hub
+```
+
+`packages/core.txt` é a lista mínima; `pacman-explicit.txt` é só referência do PC pessoal. Não é instalado automaticamente: docker (`usermod -aG docker`), asdf/phpenv/nvm — o `.zshrc` ignora o que não existir.

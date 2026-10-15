@@ -103,7 +103,6 @@ autoload -Uz $ZSH/custom/plugins/zsh-autocomplete/Completions/_autocomplete__*(N
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
-export PATH=$PATH:/usr/bin/npm
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -120,11 +119,17 @@ export PATH=$PATH:/usr/bin/npm
 
 # if [ "$TMUX" = "" ]; then tmux; fi
 
-if [ -z "$TMUX" ]; then
+# Workspace tmuxp: completa se os repos do trabalho existem, senão a versão enxuta (portátil)
+if [[ -d ~/repo/work/infocar-backend && -r ~/workspace2.yaml ]]; then
+    _workspace=~/workspace2.yaml
+else
+    _workspace=~/workspace-lite.yaml
+fi
+if [ -z "$TMUX" ] && command -v tmux >/dev/null && command -v tmuxp >/dev/null; then
     if tmux has-session -t workspace 2>/dev/null; then
         tmux attach -t workspace
     else
-        tmuxp load ~/workspace2.yaml
+        tmuxp load "$_workspace"
     fi
 fi
 
@@ -139,16 +144,15 @@ fi
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-eval $(thefuck --alias)
+command -v thefuck >/dev/null && eval $(thefuck --alias)
 #source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 #source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 #source /home/luqueta/.oh-my-zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-. $HOME/.asdf/asdf.sh
+[[ -r $HOME/.asdf/asdf.sh ]] && . $HOME/.asdf/asdf.sh
+[[ -r $HOME/.asdf/completions/asdf.bash ]] && . $HOME/.asdf/completions/asdf.bash
 
-. $HOME/.asdf/completions/asdf.bash
-
-eval "$(zoxide init zsh)"
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -157,13 +161,21 @@ export NVM_DIR="$HOME/.nvm"
 
 export PHPENV_ROOT="$HOME/.phpenv"
 export PATH="$PHPENV_ROOT/bin:$PATH"
-eval "$(phpenv init -)"
+command -v phpenv >/dev/null && eval "$(phpenv init -)"
 export PATH="$HOME/.local/bin:$PATH"
 
-alias dev="tmuxp load ~/workspace2.yaml"
+alias dev="tmuxp load $_workspace"
 
 # Opportunity Hunter
 alias hunter="$HOME/repo/opportunity-hunter/bin/hunter"
 
 # Previsão do tempo (wttr.in) ao abrir o terminal
 [[ -r ~/.config/cyber/wttr.zsh ]] && { source ~/.config/cyber/wttr.zsh; wttr }
+
+# hub-tui: infocar (projetos) em qualquer ambiente; Modo GPU/QWEN só existem dentro do WSL
+# ('gpu' já é alias de git push upstream)
+alias infocar='hub --project infocar'   # hub-tui: ecossistema Infocar (~/repo/work)
+if [[ -n $WSL_DISTRO_NAME ]]; then
+  alias mgpu='hub gpu'
+  alias mqwen='hub qwen'
+fi

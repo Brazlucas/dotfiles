@@ -3,6 +3,32 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# Ambiente: WSL (WezTerm no Windows) ou Linux nativo (Arch). Opções: --packages instala os pacotes de packages/core.txt
+IS_WSL=0
+if [ -z "${HUB_FORCE_NATIVE:-}" ] && { [ -n "${WSL_DISTRO_NAME:-}" ] || grep -qi microsoft /proc/sys/kernel/osrelease 2>/dev/null; }; then IS_WSL=1; fi
+INSTALL_PACKAGES=0
+for a in "$@"; do
+  case "$a" in
+    --packages) INSTALL_PACKAGES=1 ;;
+    --no-packages) INSTALL_PACKAGES=0 ;;
+    *) echo "uso: $0 [--packages|--no-packages]" >&2; exit 2 ;;
+  esac
+done
+# Onde ficam o WezTerm e o estado do tema: home do Windows no WSL, o próprio $HOME no Linux nativo
+if [ -z "${WINHOME:-}" ]; then
+  if [ "$IS_WSL" = 1 ]; then WINHOME=/mnt/c/Users/blubs; else WINHOME=$HOME; fi
+fi
+export WINHOME
+
+if [ "$INSTALL_PACKAGES" = 1 ]; then
+  if command -v pacman >/dev/null 2>&1; then
+    grep -vE '^\s*(#|$)' packages/core.txt | sudo pacman -S --needed --noconfirm -
+    command -v cargo >/dev/null 2>&1 || { command -v rustup >/dev/null 2>&1 && rustup default stable; }
+  else
+    echo "AVISO: pacman não encontrado; instale os itens de packages/core.txt à mão." >&2
+  fi
+fi
+
 stamp=$(date +%Y%m%d-%H%M%S)
 (cd home && find . -type f) | while read -r f; do
   f=${f#./}
@@ -11,15 +37,14 @@ stamp=$(date +%Y%m%d-%H%M%S)
 done
 cp -a home/. "$HOME/"
 
-# WezTerm (Windows): copia para o home do usuário Windows
-WINHOME=${WINHOME:-/mnt/c/Users/blubs}
+# WezTerm: no WSL copia para o home do usuário Windows; no Linux nativo ($WINHOME=$HOME) para o próprio home
 if [ -d windows ] && [ -d "$WINHOME" ]; then
   [ -e "$WINHOME/.wezterm.lua" ] && cp -a "$WINHOME/.wezterm.lua" "$WINHOME/.wezterm.lua.bak-$stamp"
   cp -a windows/. "$WINHOME/"
 fi
 
 # estado do tema cyberpunk (on/off) — usado por WezTerm, tmux e nvim
-[ -e "${WINHOME:-/mnt/c/Users/blubs}/.cyber_state" ] || printf 'on' > "${WINHOME:-/mnt/c/Users/blubs}/.cyber_state"
+[ ! -d "$WINHOME" ] || [ -e "$WINHOME/.cyber_state" ] || printf 'on' > "$WINHOME/.cyber_state"
 
 # oh-my-zsh + plugins
 [ -d "$HOME/.oh-my-zsh" ] || sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
@@ -59,7 +84,7 @@ else
   echo "       Usando o motor Python de reserva por enquanto." >&2
   ln -sfn "$HOME/.config/theme/bin/theme" "$THEME_BIN"
 fi
-"$THEME_BIN" set "$(cat "${WINHOME:-/mnt/c/Users/blubs}/.theme_state" 2>/dev/null || echo cyberpunk)"
+"$THEME_BIN" set "$(cat "$WINHOME/.theme_state" 2>/dev/null || echo cyberpunk)"
 echo "Utilitários do tema: sudo pacman -S --needed fzf eza bat git-delta   (depois: theme set <tema> para ativar as cores)"
 
 echo "tmux: abra o tmux e aperte prefixo + I (ou rode ~/.tmux/plugins/tpm/bin/install_plugins dentro do tmux)"

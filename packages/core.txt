@@ -1,0 +1,29 @@
+# Pacotes mínimos para a workspace (Arch nativo ou WSL): `./restore.sh --packages`
+# (pacman-explicit.txt é só referência do PC pessoal.)
+base-devel
+git
+curl
+unzip
+zsh
+tmux
+tmuxp
+neovim
+ripgrep
+fd
+fzf
+eza
+bat
+git-delta
+lazygit
+zoxide
+thefuck
+htop
+btop
+nodejs
+npm
+rustup
+xdg-utils
+wl-clipboard
+xclip
+wezterm
+ttf-jetbrains-mono-nerd

@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-FILES=(.zshrc .tmux.conf .nanorc .tool-versions .gitconfig tmuxpconf.yaml)
+FILES=(.zshrc .tmux.conf .nanorc .tool-versions .gitconfig tmuxpconf.yaml workspace2.yaml workspace-lite.yaml)
 DIRS=(.tmuxp
   .config/nvim .config/nvim.astronvim
   .config/btop .config/htop .config/lazygit .config/lazydocker .config/gitui
@@ -20,7 +20,9 @@ for d in "${DIRS[@]}"; do
   [ -d "$HOME/$d" ] && mkdir -p "home/$d" && cp -a "$HOME/$d/." "home/$d/"
 done
 # WezTerm roda no Windows: copia a config (o tema vem do sistema `theme`) para windows/
-WINHOME=${WINHOME:-/mnt/c/Users/blubs}
+if [ -z "${WINHOME:-}" ]; then
+  if [ -z "${HUB_FORCE_NATIVE:-}" ] && { [ -n "${WSL_DISTRO_NAME:-}" ] || grep -qi microsoft /proc/sys/kernel/osrelease 2>/dev/null; }; then WINHOME=/mnt/c/Users/blubs; else WINHOME=$HOME; fi
+fi
 rm -rf windows && mkdir -p windows
 for f in .wezterm.lua .wezterm_switcher.lua; do [ -e "$WINHOME/$f" ] && cp -a "$WINHOME/$f" "windows/$f"; done
 

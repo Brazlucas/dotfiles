@@ -2,8 +2,15 @@
 -- e acompanha mudanças feitas pelo WezTerm, pelo tmux ou pelo terminal.
 local M = {}
 
-local state_file = "/mnt/c/Users/blubs/.theme_state"
-local legacy_file = "/mnt/c/Users/blubs/.cyber_state"
+-- WSL: o estado fica no home do Windows ($WINHOME); Linux nativo: no $HOME
+local function state_dir()
+  local w = vim.env.WINHOME
+  if w and w ~= "" then return w end
+  if vim.env.WSL_DISTRO_NAME or vim.fn.isdirectory("/mnt/c/Users/blubs") == 1 then return "/mnt/c/Users/blubs" end
+  return vim.fn.expand("~")
+end
+local state_file = state_dir() .. "/.theme_state"
+local legacy_file = state_dir() .. "/.cyber_state"
 local palette_file = vim.fn.expand("~/.config/theme/build/current/nvim.lua")
 -- marcador do tema ativo (nome + hora): muda em `theme set` E em `theme preview` (prévia do seletor Ctrl+Alt+T)
 local active_dir = vim.fn.expand("~/.config/theme/build")

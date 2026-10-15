@@ -26,7 +26,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 HOME = Path.home()
-WINHOME = Path(os.environ.get("WINHOME", "/mnt/c/Users/blubs"))
+def _default_winhome():
+    """Dentro do WSL o estado/WezTerm ficam no home do Windows; no Linux nativo, no $HOME."""
+    if os.environ.get("HUB_FORCE_NATIVE"):
+        return HOME
+    osrelease = Path("/proc/sys/kernel/osrelease")
+    wsl = bool(os.environ.get("WSL_DISTRO_NAME")) or (osrelease.exists() and "microsoft" in osrelease.read_text().lower())
+    return Path("/mnt/c/Users/blubs") if wsl else HOME
+
+
+WINHOME = Path(os.environ.get("WINHOME") or _default_winhome())
 STATE = WINHOME / ".theme_state"
 BUILD = ROOT / "build"
 LAST = BUILD / ".last_theme"
@@ -341,7 +350,8 @@ def current():
 
 
 def set_state(name):
-    WINHOME.mkdir(parents=True, exist_ok=True)
+    if not str(WINHOME).startswith("/mnt"):
+        WINHOME.mkdir(parents=True, exist_ok=True)
     STATE.write_text(name)
     # compatibilidade com leitores antigos do on/off
     LEGACY_STATE.write_text("off" if name == CLASSIC else "on")
