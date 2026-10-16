@@ -4,6 +4,14 @@
 
 export ZSH="$HOME/.oh-my-zsh"
 
+# WSL: as ~75 entradas de /mnt/c no PATH (Java, CUDA, Razer...) passam pelo 9p e deixam o zsh-autocomplete e a
+# abertura do shell lentos. Mantém só o C:\Windows (System32: curl/powershell/tasklist/nvidia-smi usados pelo hub).
+if [[ -n $WSL_DISTRO_NAME ]]; then
+  _p=(); for _d in $path; do [[ $_d != /mnt/c/* || ${_d:l} == /mnt/c/windows(|/*) ]] && _p+=$_d; done
+  path=($_p); unset _p _d
+  typeset -U path
+fi
+
 # zsh-autocomplete: faz o zasync (baixado pelo plugin) carregar corretamente
 fpath=(~/.cache/zsh/zasync $fpath)
 
@@ -155,13 +163,26 @@ command -v thefuck >/dev/null && eval $(thefuck --alias)
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 
 export NVM_DIR="$HOME/.nvm"
-# Se o ~/.npmrc tem prefix/globalconfig (ex.: CodeArtifact), o nvm não consegue ativar versão e avisa a cada shell:
-# nesse caso carrega sem ativar (--no-use) e o node do sistema continua valendo.
+# nvm sob demanda (carregar o nvm.sh custa ~0,5 s a cada shell). Se o ~/.npmrc tem prefix/globalconfig
+# (ex.: CodeArtifact), o nvm não consegue ativar versão: aí carrega sem ativar (--no-use) e o node do sistema vale.
+# Enquanto o nvm não carrega, o node/npm do alias default já ficam no PATH; nvm/node/npm/npx/pnpm/yarn disparam o carregamento.
 _nvm_args=()
 grep -qE '^\s*(prefix|globalconfig)\s*=' ~/.npmrc 2>/dev/null && _nvm_args=(--no-use)
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" "${_nvm_args[@]}"  # This loads nvm
-unset _nvm_args
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+if [[ -z ${_nvm_args[*]} && -r $NVM_DIR/alias/default ]]; then
+  _nvm_def=$(<$NVM_DIR/alias/default)
+  _nvm_bin=($NVM_DIR/versions/node/${_nvm_def}*(N/On[1]))
+  [[ -n $_nvm_bin ]] && export PATH="${_nvm_bin[1]}/bin:$PATH"
+  unset _nvm_def _nvm_bin
+fi
+_nvm_load() {
+  unset -f nvm node npm npx pnpm yarn corepack 2>/dev/null
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" "${_nvm_args[@]}"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+}
+for _c in nvm node npm npx pnpm yarn corepack; do
+  eval "$_c() { _nvm_load; $_c \"\$@\" }"
+done
+unset _c
 [[ -s "$HOME/.avn/bin/avn.sh" ]] && source "$HOME/.avn/bin/avn.sh" # load avn
 
 export PHPENV_ROOT="$HOME/.phpenv"
