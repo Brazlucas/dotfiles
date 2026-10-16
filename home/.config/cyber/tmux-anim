@@ -1,0 +1,52 @@
+#!/bin/sh
+# tmux-anim <tab|border> — transições suaves no tmux (disparado pelos hooks do tema).
+#   tab    : a aba da janela atual acende e assenta na cor de repouso (opção @tab_bg -> @anim_tab)
+#   border : a borda do painel ativo acende e assenta (pane-active-border-style -> @anim_border)
+# Cada chamada cancela a anterior do mesmo tipo (trocas rápidas não se acumulam) e SEMPRE termina na cor de repouso.
+# Desligue com TMUX_ANIM_OFF=1 (no ambiente do servidor: `tmux set -g @anim_off 1`). Ajustes: FRAMES, STEP (s), FLASH (%).
+kind=${1:-tab}
+[ "$(tmux show -gqv @anim_off)" = 1 ] && exit 0
+[ -n "$TMUX_ANIM_OFF" ] && exit 0
+
+FRAMES=${FRAMES:-8}      # quadros da animação
+STEP=${STEP:-0.022}      # segundos entre quadros (~180 ms no total)
+FLASH=${FLASH:-62}       # % de branco no primeiro quadro
+
+pidf="${XDG_RUNTIME_DIR:-/tmp}/tmux-anim-$kind-$(id -u).pid"
+[ -f "$pidf" ] && kill "$(cat "$pidf")" 2>/dev/null
+echo $$ > "$pidf"
+
+case $kind in
+  tab)    base=$(tmux show -gqv @anim_tab) ;;
+  border) base=$(tmux show -gqv @anim_border) ;;
+  *) exit 2 ;;
+esac
+case $base in '#'??????) ;; *) exit 0 ;; esac   # cor de repouso desconhecida (ex.: tema classic): nada a fazer
+
+# mix <#base> <peso 0..100 de branco> -> #rrggbb
+mix() {
+  h=${1#\#}
+  r=$((0x$(printf %s "$h" | cut -c1-2))); g=$((0x$(printf %s "$h" | cut -c3-4))); b=$((0x$(printf %s "$h" | cut -c5-6)))
+  w=$2
+  printf '#%02x%02x%02x' $((r + (255 - r) * w / 100)) $((g + (255 - g) * w / 100)) $((b + (255 - b) * w / 100))
+}
+
+apply() {
+  case $kind in
+    tab)    tmux set -g @tab_bg "$1" \; refresh-client -S 2>/dev/null ;;
+    border) tmux set -g pane-active-border-style "fg=$1" \; refresh-client -S 2>/dev/null ;;
+  esac
+}
+
+i=0
+while [ "$i" -lt "$FRAMES" ]; do
+  # ease-out quadrático: o brilho cai rápido no começo e assenta devagar
+  rest=$((FRAMES - i))
+  w=$((FLASH * rest * rest / (FRAMES * FRAMES)))
+  apply "$(mix "$base" "$w")"
+  i=$((i + 1))
+  sleep "$STEP"
+done
+apply "$base"
+[ "$(cat "$pidf" 2>/dev/null)" = "$$" ] && rm -f "$pidf"
+exit 0

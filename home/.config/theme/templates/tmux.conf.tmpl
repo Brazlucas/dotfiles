@@ -18,7 +18,11 @@ set -g status-left "#[bg={{accent1}},fg={{bg}},bold]  #S #[bg={{bg_deep}},fg={{a
 # janelas
 set -g window-status-separator ""
 set -g window-status-format "#[bg={{bg_deep}},fg={{dim}}] #I #[fg={{dim}}]#W "
-set -g window-status-current-format "#[bg={{bg_deep}},fg={{accent2}}]#[bg={{accent2}},fg={{bg}},bold] #I  #W#{?window_zoomed_flag, 󰁌,} #[bg={{bg_deep}},fg={{accent2}},nobold]"
+# (a cor da aba atual vem de @tab_bg: o ~/.config/cyber/tmux-anim a anima ao trocar de janela e ela assenta em @anim_tab)
+set -g @anim_tab "{{accent2}}"
+set -g @tab_bg "{{accent2}}"
+set -g @anim_border "{{accent1}}"
+set -g window-status-current-format "#[bg={{bg_deep}},fg=#{@tab_bg}]#[bg=#{@tab_bg},fg={{bg}},bold] #I  #W#{?window_zoomed_flag, 󰁌,} #[bg={{bg_deep}},fg=#{@tab_bg},nobold]"
 set -g window-status-activity-style "fg={{yellow}}"
 set -g window-status-bell-style "fg={{accent1}},bold"
 
@@ -37,6 +41,10 @@ set -g message-style "bg={{bg_alt}},fg={{accent2}},bold"
 set -g message-command-style "bg={{bg_alt}},fg={{accent1}},bold"
 set -g mode-style "bg={{sel}},fg={{sel_fg}}"
 set -g clock-mode-colour "{{accent2}}"
+
+# transições: trocar de janela/painel faz a aba e a borda acenderem e assentarem (desligue: tmux set -g @anim_off 1)
+set-hook -g session-window-changed 'run-shell -b "~/.config/cyber/tmux-anim tab"'
+set-hook -g window-pane-changed 'run-shell -b "~/.config/cyber/tmux-anim border"'
 
 {{#if neko}}
 # nova janela (prefixo + c) mostra o gato
@@ -77,6 +85,11 @@ set -gu message-command-style
 set -gu mode-style
 set -gu clock-mode-colour
 set-hook -gu client-attached
+set-hook -gu session-window-changed
+set-hook -gu window-pane-changed
+set -gu @anim_tab
+set -gu @tab_bg
+set -gu @anim_border
 bind c new-window
 
 bind T run-shell "~/.local/bin/theme toggle"
