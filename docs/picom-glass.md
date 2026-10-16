@@ -31,16 +31,25 @@ só aparece onde há algo atrás da janela (não com ela maximizada sobre um des
 Teste rápido: abra uma imagem de xadrez fino atrás de uma janela do WezTerm; dentro da janela o xadrez deve virar cinza liso.
 
 ## Barra (polybar) e dock (Plank)
-O motor `theme` deixa a polybar e a dock translúcidas (alfa nas cores). Para o desfoque, acrescente outra regra e **remova**
-o `blur-background = false;` da regra dos docks (`window_type = 'dock' || ... class_g = 'Plank' ...`), senão ele vence:
+O motor `theme` deixa a polybar e a dock translúcidas (alfa nas cores). **Só a polybar leva desfoque.** O Plank fica de
+fora: a janela dele cobre a base da tela inteira, e o blur borraria tudo que está atrás (ex.: a barra de status do tmux),
+mesmo fora do painel dos ícones. Pontos que pegam:
+
+- Com `blur-method` definido, o picom desfoca **toda** janela translúcida por padrão. O `blur-background = false` global
+  não vale nas regras: o que decide é a regra. Por isso o Plank tem uma regra explícita `false`.
+- Em regras que se sobrepõem, **a última vence**. Mantenha a regra do Plank depois da do Polybar.
+- Tire o `blur-background = false;` da regra dos docks que já existe, senão ele vence para a polybar.
 
 ```conf
   , {
-    match = "class_g = 'Polybar' || class_g = 'Plank'";
+    match = "class_g = 'Polybar'";
     blur-background = true;
+  }, {
+    match = "class_g = 'Plank'";
+    blur-background = false;
   }
 ```
-(Não consegui confirmar visualmente o desfoque da barra: o gerenciador de janelas não deixa pôr uma janela por baixo dela.)
+(Não consegui confirmar visualmente o desfoque da polybar: o gerenciador de janelas não deixa pôr uma janela por baixo dela.)
 
 ## Voltar ao que era antes
 ```sh
