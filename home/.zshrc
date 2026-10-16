@@ -174,13 +174,15 @@ if [[ -z ${_nvm_args[*]} && -r $NVM_DIR/alias/default ]]; then
   [[ -n $_nvm_bin ]] && export PATH="${_nvm_bin[1]}/bin:$PATH"
   unset _nvm_def _nvm_bin
 fi
-_nvm_load() {
-  unset -f nvm node npm npx pnpm yarn corepack 2>/dev/null
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" "${_nvm_args[@]}"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-}
+# Cada wrapper se desfaz e carrega o nvm por conta própria (sem depender de outra função: shells que herdam só
+# os wrappers não entram em recursão).
 for _c in nvm node npm npx pnpm yarn corepack; do
-  eval "$_c() { _nvm_load; $_c \"\$@\" }"
+  eval "$_c() {
+    unset -f nvm node npm npx pnpm yarn corepack 2>/dev/null
+    [ -s \"\$NVM_DIR/nvm.sh\" ] && \\. \"\$NVM_DIR/nvm.sh\" ${_nvm_args[*]}
+    [ -s \"\$NVM_DIR/bash_completion\" ] && \\. \"\$NVM_DIR/bash_completion\"
+    $_c \"\$@\"
+  }"
 done
 unset _c
 [[ -s "$HOME/.avn/bin/avn.sh" ]] && source "$HOME/.avn/bin/avn.sh" # load avn
