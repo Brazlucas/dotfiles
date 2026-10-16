@@ -117,9 +117,11 @@ if bg_ok then
       horizontal_align = 'Center', vertical_align = 'Middle', opacity = BG_OPACITY },
     { source = { Color = T.scheme.background }, width = '100%', height = '100%', opacity = BG_VEIL },
   }
-  -- Windows: Acrylic de verdade (vidro com blur do sistema). Linux/X11: sem blur nativo, o vidro é o da imagem
-  -- (desfoque + véu) e a janela fica opaca para o desktop não atrapalhar a leitura.
-  if not IS_WIN then config.window_background_opacity = 1.0 end
+  -- Vidro de verdade: Windows = Acrylic; Linux/X11 = o picom com blur (backend glx + regra para este app, veja
+  -- docs/picom-glass.md). A janela fica translúcida (window_background_opacity do tema) e o desfoque do que está
+  -- atrás vem do sistema; a imagem + o véu mantêm as letras legíveis. Sem o blur do picom a janela só fica
+  -- translúcida: aumente BG_VEIL (ou use window_background_opacity = 1.0 aqui) se atrapalhar a leitura.
+end
 end
 
 config.use_resize_increments = true -- redimensiona em múltiplos exatos de célula (sem sobra embaixo)
