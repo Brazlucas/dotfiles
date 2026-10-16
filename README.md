@@ -39,7 +39,9 @@ theme repair            # limpa estado acumulado do tmux e redesenha os clientes
 **Seletor estilo Alt+Tab (`Ctrl+Alt+T` / `Ctrl+Alt+Shift+T`):** um toque cicla para o próximo tema; segurando `Ctrl+Alt` e batendo `T` você avança vendo a **prévia ao vivo** (o WezTerm se recolore e uma faixa mostra anterior · atual · seguinte) e ao **soltar** o tema é aplicado em tudo. `Esc` cancela, `Enter` confirma, setas navegam. Segurar só o `T` avança em ritmo controlado.
 Ajustes em `windows/.wezterm_switcher.lua` (`confirm_mode = 'release'|'timeout'`, `step_min_interval`, `debug`). Os dados vêm de `theme sync` (`C:\Users\<user>\.wezterm_themes\`). Testes: `nvim -l home/.config/theme/tests/switcher_test.lua` (seletor) e, no hub-tui, `cargo test` + `scripts/theme-golden.sh` (motor).
 
-**Plano de fundo:** `windows/.wezterm_bg/macchiato.png` é recolorido pelo tema ativo (duotone: fundo → acento → texto) por `magick` quando o WezTerm carrega a config, e guardado em cache em `~/.wezterm_bg/<tema>-<cores>.png`. Troque a intensidade em `BG_OPACITY` (`.wezterm.lua`). Sem ImageMagick ou sem a imagem, fica só a cor do tema. No Arch: `sudo pacman -S imagemagick`.
+**Plano de fundo (vidro fosco):** `windows/.wezterm_bg/macchiato.png` é recolorido pelo tema ativo (duotone: fundo → acento → texto), desfocado e coberto por um véu da cor do tema, para as letras ficarem legíveis. Gerado com `magick` e guardado em `~/.wezterm_bg/<tema>-<cores>-b<desfoque>.png`. O tema atual é gerado na hora e **os outros em segundo plano** (processo único, baixa prioridade), então trocar de tema é instantâneo. Ajustes no topo do bloco, em `.wezterm.lua`: `BG_OPACITY`, `BG_VEIL`, `BG_BLUR`.
+- **Arch nativo:** a janela fica opaca (o picom do Archcraft usa o backend `xrender`, sem blur real); o "vidro" é o da imagem. Precisa de `imagemagick`.
+- **WSL/Windows:** o `magick` roda dentro do WSL (`wsl.exe`; precisa de `imagemagick` na distro) e a janela mantém o Acrylic do Windows. Sem `magick` ou sem a imagem, fica só a cor do tema.
 
 ### Criar um tema novo
 1. Copie uma paleta: `cp home/.config/theme/palettes/dracula.toml home/.config/theme/palettes/meu-tema.toml`

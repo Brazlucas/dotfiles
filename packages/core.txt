@@ -26,4 +26,5 @@ xdg-utils
 wl-clipboard
 xclip
 wezterm
+imagemagick
 ttf-jetbrains-mono-nerd
