@@ -1,7 +1,7 @@
 session_name: workspace
 windows:
 - window_name: Panel
-  start_directory: ~
+  start_directory: "~"
   layout: 64bc,140x32,0,0[140x16,0,0,18,140x15,0,17{69x15,0,17,19,70x15,70,17,35}]
   options:
     automatic-rename: false
@@ -10,7 +10,7 @@ windows:
   - shell_command: htop
   - shell_command: []
 - window_name: claude
-  start_directory: ~
+  start_directory: "~"
   options:
     automatic-rename: false
   panes:
@@ -22,7 +22,7 @@ windows:
   panes:
   - shell_command: nvim
 - window_name: hub
-  start_directory: ~
+  start_directory: "~"
   options:
     automatic-rename: false
   panes:

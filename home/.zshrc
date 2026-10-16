@@ -155,7 +155,12 @@ command -v thefuck >/dev/null && eval $(thefuck --alias)
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# Se o ~/.npmrc tem prefix/globalconfig (ex.: CodeArtifact), o nvm não consegue ativar versão e avisa a cada shell:
+# nesse caso carrega sem ativar (--no-use) e o node do sistema continua valendo.
+_nvm_args=()
+grep -qE '^\s*(prefix|globalconfig)\s*=' ~/.npmrc 2>/dev/null && _nvm_args=(--no-use)
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" "${_nvm_args[@]}"  # This loads nvm
+unset _nvm_args
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 [[ -s "$HOME/.avn/bin/avn.sh" ]] && source "$HOME/.avn/bin/avn.sh" # load avn
 

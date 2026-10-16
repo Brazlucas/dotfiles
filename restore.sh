@@ -32,8 +32,10 @@ fi
 stamp=$(date +%Y%m%d-%H%M%S)
 (cd home && find . -type f) | while read -r f; do
   f=${f#./}
-  [ -e "$HOME/$f" ] && [ ! -L "$HOME/$f" ] && mkdir -p "$HOME/.dotfiles-backup-$stamp/$(dirname "$f")" \
-    && cp -a "$HOME/$f" "$HOME/.dotfiles-backup-$stamp/$f"
+  if [ -e "$HOME/$f" ] && [ ! -L "$HOME/$f" ]; then
+    mkdir -p "$HOME/.dotfiles-backup-$stamp/$(dirname "$f")"
+    cp -a "$HOME/$f" "$HOME/.dotfiles-backup-$stamp/$f"
+  fi
 done
 cp -a home/. "$HOME/"
 
