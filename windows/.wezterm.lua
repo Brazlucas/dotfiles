@@ -35,12 +35,6 @@ if not ok or type(T) ~= 'table' then
 end
 local F = T.features
 
--- Desktop (Arch/X11): o papel de parede acompanha o tema (theme-wallpaper é barato quando nada mudou e não faz
--- nada sem nitrogen/X11). No Windows o desktop não é tocado.
-if not IS_WIN then
-  pcall(wezterm.background_child_process, { wezterm.home_dir .. '/.config/theme/bin/theme-wallpaper', T.name })
-end
-
 config.color_schemes = { [T.name] = T.scheme }
 if next(T.scheme) ~= nil then config.color_scheme = T.name end
 

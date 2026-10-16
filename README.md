@@ -43,7 +43,7 @@ Ajustes em `windows/.wezterm_switcher.lua` (`confirm_mode = 'release'|'timeout'`
 - **Arch nativo:** a janela fica opaca (o picom do Archcraft usa o backend `xrender`, sem blur real); o "vidro" é o da imagem.
 - **WSL/Windows:** a janela mantém o Acrylic do Windows (vidro de verdade) com a imagem por baixo.
 - Sem a imagem do tema, fica só a cor do tema.
-- **Papel de parede do desktop (Arch/X11):** o `gen-backgrounds.sh` também cria `home/.config/theme/wallpapers/<tema>.jpg` (brilho suave do acento sobre o fundo do tema). O WezTerm chama `~/.config/theme/bin/theme-wallpaper <tema>` quando recarrega e o `nitrogen` aplica, então o que aparece por trás do vidro combina com o tema. Sem `nitrogen`/X11 (WSL, Windows) nada é tocado. Precisa de `nitrogen`.
+- **Desktop (Arch/X11, feito pelo motor `theme`):** `theme set` dispara em segundo plano `theme _desktop <tema>` (o `set` continua voltando em ~40 ms) que (1) faz **transição suave** do papel de parede (~0,3 s, 12 frames direto no X11; as imagens `home/.config/theme/wallpapers/<tema>.jpg` saem do `gen-backgrounds.sh`), (2) reescreve as cores da **polybar** (`colors.ini`, translúcida) e a reinicia, e (3) gera o tema da dock **Plank**. `classic` devolve o original (guardado na primeira vez em `build/.desktop-orig`; backup da polybar em `colors.ini.theme-orig`). Não roda no WSL/Windows nem sem `$DISPLAY` (`THEME_NO_DESKTOP=1` desliga). Para o vidro da polybar e da dock, veja `docs/picom-glass.md`. A transição é só do papel de parede (visível também através do terminal em vidro): o WezTerm não anima troca de paleta, e polybar/dock trocam de uma vez.
 
 ### Criar um tema novo
 1. Copie uma paleta: `cp home/.config/theme/palettes/dracula.toml home/.config/theme/palettes/meu-tema.toml`
