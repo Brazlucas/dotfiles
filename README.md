@@ -43,6 +43,7 @@ Ajustes em `windows/.wezterm_switcher.lua` (`confirm_mode = 'release'|'timeout'`
 - **Arch nativo:** a janela fica opaca (o picom do Archcraft usa o backend `xrender`, sem blur real); o "vidro" é o da imagem.
 - **WSL/Windows:** a janela mantém o Acrylic do Windows (vidro de verdade) com a imagem por baixo.
 - Sem a imagem do tema, fica só a cor do tema.
+- **Papel de parede do desktop (Arch/X11):** o `gen-backgrounds.sh` também cria `home/.config/theme/wallpapers/<tema>.jpg` (brilho suave do acento sobre o fundo do tema). O WezTerm chama `~/.config/theme/bin/theme-wallpaper <tema>` quando recarrega e o `nitrogen` aplica, então o que aparece por trás do vidro combina com o tema. Sem `nitrogen`/X11 (WSL, Windows) nada é tocado. Precisa de `nitrogen`.
 
 ### Criar um tema novo
 1. Copie uma paleta: `cp home/.config/theme/palettes/dracula.toml home/.config/theme/palettes/meu-tema.toml`

@@ -1,0 +1,10 @@
+#!/bin/sh
+# Aplica o papel de parede do tema ativo (~/.config/theme/wallpapers/<tema>.jpg) com o nitrogen.
+# Só no Linux nativo com X11: no WSL/Windows, sem DISPLAY ou sem nitrogen não faz nada. Barato quando o tema não mudou.
+[ -n "$DISPLAY" ] && command -v nitrogen >/dev/null 2>&1 || exit 0
+name=${1:-$(cat "$HOME/.theme_state" 2>/dev/null)} # o WezTerm passa o nome do tema que acabou de carregar
+wp="$HOME/.config/theme/wallpapers/$name.jpg"
+[ -n "$name" ] && [ -r "$wp" ] || exit 0
+last="$HOME/.cache/theme-wallpaper"
+[ "$(cat "$last" 2>/dev/null)" = "$name" ] && exit 0
+nitrogen --set-zoom-fill --save "$wp" 2>/dev/null && { mkdir -p "$HOME/.cache"; printf %s "$name" > "$last"; }
