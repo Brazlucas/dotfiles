@@ -110,12 +110,16 @@ local BG_OPACITY = 0.75 -- intensidade da imagem (0 = só a cor do tema, 1 = ima
 local BG_VEIL = 0.35    -- véu da cor do tema por cima da imagem: maior = letras mais legíveis
 local bg_ok = false
 do local f = io.open(BG_FILE, 'rb'); if f then f:close(); bg_ok = true end end
+-- Com `config.background` o window_background_opacity NÃO vale para as camadas: a translucidez tem de estar na
+-- opacidade de cada camada (senão a janela fica sólida e não há vidro). GLASS = quanto da janela é "tinta":
+-- menor = mais vidro (se vê mais do que está atrás, desfocado pelo picom/Acrylic).
+local GLASS = IS_WIN and F.opacity or 0.55
 if bg_ok then
   config.background = {
-    { source = { Color = T.scheme.background }, width = '100%', height = '100%' },
+    { source = { Color = T.scheme.background }, width = '100%', height = '100%', opacity = GLASS },
     { source = { File = BG_FILE }, width = 'Cover', height = 'Cover',
-      horizontal_align = 'Center', vertical_align = 'Middle', opacity = BG_OPACITY },
-    { source = { Color = T.scheme.background }, width = '100%', height = '100%', opacity = BG_VEIL },
+      horizontal_align = 'Center', vertical_align = 'Middle', opacity = BG_OPACITY * GLASS },
+    { source = { Color = T.scheme.background }, width = '100%', height = '100%', opacity = BG_VEIL * GLASS },
   }
   -- Vidro de verdade: Windows = Acrylic; Linux/X11 = o picom com blur (backend glx + regra para este app, veja
   -- docs/picom-glass.md). A janela fica translúcida (window_background_opacity do tema) e o desfoque do que está

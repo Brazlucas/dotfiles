@@ -23,9 +23,12 @@ rules: (
 
 Reiniciar o compositor (a tela pisca um instante): `pkill -x picom; setsid picom &`.
 
-O `.wezterm.lua` já deixa a janela translúcida (`window_background_opacity` do tema); a imagem do tema e o véu
-(`BG_VEIL`) mantêm as letras legíveis. O desfoque só aparece onde há algo atrás da janela (não com ela maximizada
-sobre um desktop vazio).
+O `.wezterm.lua` põe a translucidez nas **camadas** do fundo (`GLASS`, 0,55 no Linux): com `config.background` o
+`window_background_opacity` não vale, então sem isso a janela fica sólida e o blur não aparece. Menor `GLASS` = mais
+vidro (mais do fundo desfocado atravessa); a imagem do tema e o véu (`BG_VEIL`) mantêm as letras legíveis. O desfoque
+só aparece onde há algo atrás da janela (não com ela maximizada sobre um desktop vazio).
+
+Teste rápido: abra uma imagem de xadrez fino atrás de uma janela do WezTerm; dentro da janela o xadrez deve virar cinza liso.
 
 ## Voltar ao que era antes
 ```sh
@@ -35,5 +38,5 @@ Se o picom não subir com o `glx`, o mesmo comando restaura o `xrender` (a tela 
 
 ## Ajustes
 - Mais fosco/mais nítido: `blur-strength`.
-- Letras difíceis de ler: aumente `BG_VEIL` em `.wezterm.lua` ou reduza a transparência do tema.
+- Letras difíceis de ler: aumente `GLASS` (mais sólido) ou `BG_VEIL` em `.wezterm.lua`.
 - WezTerm no Windows: o vidro vem do Acrylic do sistema, nada a fazer aqui.
