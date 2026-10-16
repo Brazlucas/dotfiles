@@ -26,6 +26,5 @@ xdg-utils
 wl-clipboard
 xclip
 wezterm
-python-pillow
-python-numpy
+imagemagick
 ttf-jetbrains-mono-nerd
