@@ -35,6 +35,16 @@ if not ok or type(T) ~= 'table' then
 end
 local F = T.features
 
+-- Transparência (só Linux nativo): ~/.local/state/wezterm_glass = 'on'|'off', alternado por `wezterm-glass-toggle`
+-- (Super+G no Openbox). Não mexe no tema: só tira/põe a translucidez. No Windows/WSL sempre vale o tema.
+local glass_state = wezterm.home_dir .. '/.local/state/wezterm_glass'
+local glass_on = true
+if not IS_WIN then
+  wezterm.add_to_config_reload_watch_list(glass_state)
+  local gf = io.open(glass_state, 'r')
+  if gf then glass_on = (gf:read('*l') or 'on') ~= 'off'; gf:close() end
+end
+
 config.color_schemes = { [T.name] = T.scheme }
 if next(T.scheme) ~= nil then config.color_scheme = T.name end
 
@@ -98,7 +108,7 @@ end
 -- ───── Vidro ─────
 -- Acrylic = transparência com blur; o padding 0 deixa o tmux encostar nas bordas
 if IS_WIN then config.win32_system_backdrop = 'Acrylic' end
-config.window_background_opacity = F.opacity
+config.window_background_opacity = glass_on and F.opacity or 1.0
 config.text_background_opacity = 1.0
 
 -- Plano de fundo em vidro fosco, uma imagem pronta por tema (~/.wezterm_bg/<tema>.jpg): a arte vira um duotone
@@ -113,8 +123,8 @@ do local f = io.open(BG_FILE, 'rb'); if f then f:close(); bg_ok = true end end
 -- Com `config.background` o window_background_opacity NÃO vale para as camadas: a translucidez tem de estar na
 -- opacidade de cada camada (senão a janela fica sólida e não há vidro). GLASS = quanto da janela é "tinta":
 -- menor = mais vidro (se vê mais do que está atrás, desfocado pelo picom/Acrylic).
-local GLASS = IS_WIN and F.opacity or 0.55
-if bg_ok then
+local GLASS = IS_WIN and F.opacity or (glass_on and 0.55 or 1.0)
+if bg_ok and glass_on then -- sem transparência (Linux) também some a imagem de fundo: fica só a cor do tema
   config.background = {
     { source = { Color = T.scheme.background }, width = '100%', height = '100%', opacity = GLASS },
     { source = { File = BG_FILE }, width = 'Cover', height = 'Cover',

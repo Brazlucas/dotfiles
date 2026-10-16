@@ -9,8 +9,8 @@ DIRS=(.tmuxp
   .config/btop .config/htop .config/lazygit .config/lazydocker .config/gitui
   .config/git .config/neofetch .config/thefuck .config/tmux .config/yay
   .config/psysh .config/systemd .config/facilita .config/cyber .config/theme)
-# .config/pgcli: só o arquivo de config (history/log ficam de fora)
-EXTRA=(.config/pgcli/config)
+# EXTRA: só arquivos soltos (pgcli sem history/log; atalho Super+G do Openbox e o toggle de transparência do WezTerm)
+EXTRA=(.config/pgcli/config .config/openbox/rc.xml .local/bin/wezterm-glass-toggle)
 
 rm -rf home && mkdir -p home
 for f in "${FILES[@]}" "${EXTRA[@]}"; do
