@@ -39,9 +39,10 @@ theme repair            # limpa estado acumulado do tmux e redesenha os clientes
 **Seletor estilo Alt+Tab (`Ctrl+Alt+T` / `Ctrl+Alt+Shift+T`):** um toque cicla para o próximo tema; segurando `Ctrl+Alt` e batendo `T` você avança vendo a **prévia ao vivo** (o WezTerm se recolore e uma faixa mostra anterior · atual · seguinte) e ao **soltar** o tema é aplicado em tudo. `Esc` cancela, `Enter` confirma, setas navegam. Segurar só o `T` avança em ritmo controlado.
 Ajustes em `windows/.wezterm_switcher.lua` (`confirm_mode = 'release'|'timeout'`, `step_min_interval`, `debug`). Os dados vêm de `theme sync` (`C:\Users\<user>\.wezterm_themes\`). Testes: `nvim -l home/.config/theme/tests/switcher_test.lua` (seletor) e, no hub-tui, `cargo test` + `scripts/theme-golden.sh` (motor).
 
-**Plano de fundo (vidro fosco):** `windows/.wezterm_bg/macchiato.png` é recolorido pelo tema ativo (duotone: fundo → acento → texto), desfocado e coberto por um véu da cor do tema, para as letras ficarem legíveis. Gerado com `magick` e guardado em `~/.wezterm_bg/<tema>-<cores>-b<desfoque>.png`. O tema atual é gerado na hora e **os outros em segundo plano** (processo único, baixa prioridade), então trocar de tema é instantâneo. Ajustes no topo do bloco, em `.wezterm.lua`: `BG_OPACITY`, `BG_VEIL`, `BG_BLUR`.
-- **Arch nativo:** a janela fica opaca (o picom do Archcraft usa o backend `xrender`, sem blur real); o "vidro" é o da imagem. Precisa de `imagemagick`.
-- **WSL/Windows:** o `magick` roda dentro do WSL (`wsl.exe`; precisa de `imagemagick` na distro) e a janela mantém o Acrylic do Windows. Sem `magick` ou sem a imagem, fica só a cor do tema.
+**Plano de fundo (vidro fosco):** cada tema tem a sua imagem pronta em `windows/.wezterm_bg/<tema>.jpg` (a arte `macchiato.png` em duotone com as cores do tema, desfocada). O WezTerm só escolhe o arquivo do tema ativo e põe um véu da cor do tema por cima (letras legíveis), então trocar de tema não gera nada na hora e **o Windows/WSL não precisa de ImageMagick**. Ao criar ou editar uma paleta: `theme sync && ./gen-backgrounds.sh` (precisa de `imagemagick`) e commite os `.jpg`. Ajustes de intensidade em `.wezterm.lua` (`BG_OPACITY`, `BG_VEIL`) e do desfoque em `gen-backgrounds.sh` (`BLUR`).
+- **Arch nativo:** a janela fica opaca (o picom do Archcraft usa o backend `xrender`, sem blur real); o "vidro" é o da imagem.
+- **WSL/Windows:** a janela mantém o Acrylic do Windows (vidro de verdade) com a imagem por baixo.
+- Sem a imagem do tema, fica só a cor do tema.
 
 ### Criar um tema novo
 1. Copie uma paleta: `cp home/.config/theme/palettes/dracula.toml home/.config/theme/palettes/meu-tema.toml`

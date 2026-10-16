@@ -101,76 +101,19 @@ if IS_WIN then config.win32_system_backdrop = 'Acrylic' end
 config.window_background_opacity = F.opacity
 config.text_background_opacity = 1.0
 
--- Plano de fundo recolorido pelo tema, com efeito de vidro fosco. A arte (~/.wezterm_bg/macchiato.png) vira um
--- duotone com as cores do tema ativo (fundo -> acento -> texto), desfocado e coberto por um véu da cor do tema
--- (legibilidade). Gerado com ImageMagick e guardado em ~/.wezterm_bg/<tema>-<cores>-b<desfoque>.png.
---  * O tema atual é gerado na hora; os demais, em segundo plano (baixa prioridade), então trocar de tema é instantâneo.
---  * No Windows o `magick` roda dentro do WSL (wsl.exe). Sem `magick` ou sem a imagem: só a cor do tema (nada quebra).
-local BG_DIR = wezterm.home_dir .. '/.wezterm_bg'
-local BG_SRC = BG_DIR .. '/macchiato.png'
+-- Plano de fundo em vidro fosco, uma imagem pronta por tema (~/.wezterm_bg/<tema>.jpg): a arte vira um duotone
+-- com as cores do tema (fundo -> acento -> texto), desfocada. Nada é gerado aqui: as imagens vêm do repositório
+-- (`./gen-backgrounds.sh` as recria quando uma paleta muda), então trocar de tema é só trocar de arquivo.
+-- Sem a imagem do tema: só a cor do tema (nada quebra).
+local BG_FILE = wezterm.home_dir .. '/.wezterm_bg/' .. T.name .. '.jpg'
 local BG_OPACITY = 0.75 -- intensidade da imagem (0 = só a cor do tema, 1 = imagem inteira)
 local BG_VEIL = 0.35    -- véu da cor do tema por cima da imagem: maior = letras mais legíveis
-local BG_BLUR = 3       -- desfoque da imagem em px (0 = nítida)
-local SH = IS_WIN and { 'wsl.exe', '-e', 'sh', '-c' } or { 'sh', '-c' }
-local BG_GEN = ([[
-p() { if command -v wslpath >/dev/null 2>&1; then wslpath -u "$1"; else printf %s "$1"; fi; }
-gen() { s=$(p "$1"); o=$(p "$2"); [ -e "$o" ] && return 0
-  nice -n 15 magick "$s" -resize 2560x1440 -colorspace Gray -level 12.21%,100% -blur 0x@BLUR@ \
-    \( xc:"$3" xc:"$4" xc:"$5" +append -filter Triangle -resize 256x1! \) -clut "$o.tmp.png" && mv "$o.tmp.png" "$o"; }
-]]):gsub('@BLUR@', tostring(BG_BLUR))
-local function file_exists(p) local f = io.open(p, 'rb'); if f then f:close() end; return f ~= nil end
-local function bg_path(name, scheme)
-  local acc = scheme.cursor_bg or (scheme.ansi and scheme.ansi[2])
-  if not (scheme.background and scheme.foreground and acc) then return nil end
-  local hex = (scheme.background .. acc .. scheme.foreground):gsub('#', '')
-  return ('%s/%s-%s-b%d.png'):format(BG_DIR, name, hex, BG_BLUR), scheme.background, acc, scheme.foreground
-end
-
-local bg_file = nil
-if file_exists(BG_SRC) then
-  local out, bg, acc, fg = bg_path(T.name, T.scheme)
-  if out then
-    if not file_exists(out) then -- tema atual: gera agora
-      local argv = { table.unpack(SH) }
-      for _, v in ipairs { BG_GEN .. 'gen "$@"', 'sh', BG_SRC, out, bg, acc, fg } do table.insert(argv, v) end
-      pcall(wezterm.run_child_process, argv)
-    end
-    if file_exists(out) then bg_file = out end
-  end
-  -- demais temas (os do seletor): um único processo em segundo plano, com trava para não duplicar
-  local ok_dir, files = pcall(wezterm.read_dir, wezterm.home_dir .. '/.wezterm_themes')
-  if ok_dir then
-    local todo = {}
-    for _, f in ipairs(files) do
-      if f:match('%.lua$') and not f:match('index%.lua$') then
-        local ok, t = pcall(dofile, f)
-        if ok and type(t) == 'table' and t.name and type(t.scheme) == 'table' then
-          local o, b2, a2, f2 = bg_path(t.name, t.scheme)
-          if o and not file_exists(o) then
-            for _, v in ipairs { BG_SRC, o, b2, a2, f2 } do table.insert(todo, v) end
-          end
-        end
-      end
-    end
-    if #todo > 0 then
-      local argv = { table.unpack(SH) }
-      local script = BG_GEN .. [[
-lock="$(p "$1")/.lock"; shift
-find "$lock" -maxdepth 0 -mmin +15 -exec rmdir {} + 2>/dev/null
-mkdir "$lock" 2>/dev/null || exit 0
-trap 'rmdir "$lock"' EXIT
-while [ $# -ge 5 ]; do gen "$1" "$2" "$3" "$4" "$5"; shift 5; done
-]]
-      for _, v in ipairs { script, 'sh', BG_DIR } do table.insert(argv, v) end
-      for _, v in ipairs(todo) do table.insert(argv, v) end
-      pcall(wezterm.background_child_process, argv)
-    end
-  end
-end
-if bg_file then
+local bg_ok = false
+do local f = io.open(BG_FILE, 'rb'); if f then f:close(); bg_ok = true end end
+if bg_ok then
   config.background = {
     { source = { Color = T.scheme.background }, width = '100%', height = '100%' },
-    { source = { File = bg_file }, width = 'Cover', height = 'Cover',
+    { source = { File = BG_FILE }, width = 'Cover', height = 'Cover',
       horizontal_align = 'Center', vertical_align = 'Middle', opacity = BG_OPACITY },
     { source = { Color = T.scheme.background }, width = '100%', height = '100%', opacity = BG_VEIL },
   }
