@@ -100,6 +100,37 @@ end
 if IS_WIN then config.win32_system_backdrop = 'Acrylic' end
 config.window_background_opacity = F.opacity
 config.text_background_opacity = 1.0
+
+-- Plano de fundo recolorido pelo tema: a arte (~/.wezterm_bg/macchiato.png) vira um duotone com as cores
+-- do tema ativo (fundo -> acento -> texto) via ImageMagick e é guardada em ~/.wezterm_bg/<tema>-<cores>.png.
+-- Recarrega junto com o tema; sem `magick` ou sem a imagem simplesmente não há fundo (nada quebra).
+local BG_DIR = wezterm.home_dir .. '/.wezterm_bg'
+local BG_SRC = BG_DIR .. '/macchiato.png'
+local BG_OPACITY = 0.55 -- 0 = só a cor do tema, 1 = imagem inteira
+local function file_exists(p) local f = io.open(p, 'rb'); if f then f:close() end; return f ~= nil end
+local function themed_background(scheme)
+  local bg, fg = scheme.background, scheme.foreground
+  local acc = scheme.cursor_bg or (scheme.ansi and scheme.ansi[2])
+  if not (bg and fg and acc and file_exists(BG_SRC)) then return nil end
+  local out = ('%s/%s-%s.png'):format(BG_DIR, T.name, (bg .. acc .. fg):gsub('#', ''))
+  if not file_exists(out) then
+    pcall(wezterm.run_child_process, {
+      'magick', BG_SRC, '-resize', '2560x1440', '-colorspace', 'Gray', '-level', '12.21%,100%',
+      '(', 'xc:' .. bg, 'xc:' .. acc, 'xc:' .. fg, '+append', '-filter', 'Triangle', '-resize', '256x1!', ')',
+      '-clut', out,
+    })
+  end
+  return file_exists(out) and out or nil
+end
+local bg_file = themed_background(T.scheme)
+if bg_file then
+  config.background = {
+    { source = { Color = T.scheme.background }, width = '100%', height = '100%' },
+    { source = { File = bg_file }, width = 'Cover', height = 'Cover',
+      horizontal_align = 'Center', vertical_align = 'Middle', opacity = BG_OPACITY },
+  }
+end
+
 config.use_resize_increments = true -- redimensiona em múltiplos exatos de célula (sem sobra embaixo)
 config.inactive_pane_hsb = { saturation = 0.9, brightness = 0.65 }
 

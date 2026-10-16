@@ -25,6 +25,8 @@ if [ -z "${WINHOME:-}" ]; then
 fi
 rm -rf windows && mkdir -p windows
 for f in .wezterm.lua .wezterm_switcher.lua; do [ -e "$WINHOME/$f" ] && cp -a "$WINHOME/$f" "windows/$f"; done
+# imagem de fundo (só a original; as versões recoloridas por tema são cache e se regeneram sozinhas)
+if [ -e "$WINHOME/.wezterm_bg/macchiato.png" ]; then mkdir -p windows/.wezterm_bg && cp -a "$WINHOME/.wezterm_bg/macchiato.png" windows/.wezterm_bg/; fi
 
 # exporta cada tema do nvim como pacote independente (themes/<nome>.nvim) — nunca perde o tema
 for p in "$HOME"/.config/theme/palettes/*.toml; do

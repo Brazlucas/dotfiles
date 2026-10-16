@@ -45,6 +45,12 @@ if [ -d windows ] && [ -d "$WINHOME" ]; then
   cp -a windows/. "$WINHOME/"
 fi
 
+# Arch nativo: os repos do trabalho ficam em ~/repo/infocar, mas os manifestos do hub-tui usam ~/repo/work (layout do WSL).
+# Um symlink resolve sem alterar os manifestos; no WSL (IS_WSL=1) nada é tocado.
+if [ "$IS_WSL" = 0 ] && [ -d "$HOME/repo/infocar" ] && [ ! -e "$HOME/repo/work" ]; then
+  ln -s "$HOME/repo/infocar" "$HOME/repo/work"
+fi
+
 # estado do tema cyberpunk (on/off) — usado por WezTerm, tmux e nvim
 [ ! -d "$WINHOME" ] || [ -e "$WINHOME/.cyber_state" ] || printf 'on' > "$WINHOME/.cyber_state"
 
