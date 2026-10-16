@@ -122,7 +122,6 @@ if bg_ok then
   -- atrás vem do sistema; a imagem + o véu mantêm as letras legíveis. Sem o blur do picom a janela só fica
   -- translúcida: aumente BG_VEIL (ou use window_background_opacity = 1.0 aqui) se atrapalhar a leitura.
 end
-end
 
 config.use_resize_increments = true -- redimensiona em múltiplos exatos de célula (sem sobra embaixo)
 config.inactive_pane_hsb = { saturation = 0.9, brightness = 0.65 }
